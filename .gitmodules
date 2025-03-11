@@ -1,0 +1,48 @@
+[submodule "cpp/simdjson"]
+	path = cpp/simdjson
+	url = https://github.com/simdjson/simdjson.git
+[submodule "cpp/thumbnail/Simd"]
+	path = cpp/thumbnail/Simd
+	url = https://github.com/ermig1979/Simd.git
+[submodule "cpp/avif/libavif"]
+	path = cpp/avif/libavif
+	url = https://github.com/AOMediaCodec/libavif.git
+[submodule "cpp/avif/libjpeg-turbo"]
+	path = cpp/avif/libjpeg-turbo
+	url = https://github.com/libjpeg-turbo/libjpeg-turbo.git
+[submodule "cpp/gbc/gamebro"]
+	path = cpp/gbc/gamebro
+	url = https://github.com/fwsGonzo/gamebro.git
+[submodule "c/zlib/zlib-dougallj"]
+	path = c/zlib/zlib-dougallj
+	url = https://github.com/dougallj/zlib-dougallj.git
+[submodule "c/zstd/zstd"]
+	path = c/zstd/zstd
+	url = https://github.com/facebook/zstd.git
+[submodule "cpp/json"]
+	path = cpp/ext/json
+	url = https://github.com/nlohmann/json.git
+[submodule "cpp/zstd/zstd"]
+	path = cpp/zstd/zstd
+	url = https://github.com/facebook/zstd.git
+[submodule "cpp/ext/json"]
+	path = cpp/ext/json
+	url = https://github.com/nlohmann/json.git
+[submodule "cpp/sqlite/SQLiteCpp"]
+	path = cpp/sqlite/SQLiteCpp
+	url = https://github.com/SRombauts/SQLiteCpp.git
+[submodule "cpp/ext/tinyxml2"]
+	path = cpp/ext/tinyxml2
+	url = https://github.com/leethomason/tinyxml2.git
+[submodule "cpp/sd/stable-diffusion.cpp"]
+	path = cpp/sd/stable-diffusion.cpp
+	url = https://github.com/fwsGonzo/stable-diffusion.cpp.git
+[submodule "cpp/webp/libwebp"]
+	path = cpp/webp/libwebp
+	url = https://github.com/webmproject/libwebp.git
+[submodule "cpp/llama/llama.cpp"]
+	path = cpp/llama/llama.cpp
+	url = https://github.com/fwsGonzo/llama.cpp.git
+[submodule "cpp/ext/Turbo-Base64"]
+	path = cpp/ext/Turbo-Base64
+	url = https://github.com/powturbo/Turbo-Base64.git

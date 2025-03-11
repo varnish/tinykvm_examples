@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" style="height: 100%">
+<head>
+	<meta charset="utf-8">
+	<title>Say something with a stateful Varnish program</title>
+</head>
+<body style="background: linear-gradient(#1f323f, #1F1F1F); padding: 0px; height: 100%">
+	<div style="display: flex; flex-direction: column; align-items: center">
+		<!-- <img src="https://docs.varnish-software.com/images/varnish_software_logo.png" /> -->
+		<!-- <label for="resultbox">History:</label> -->
+		<textarea id="resultbox" rows="8" cols="80" disabled="true"
+			style="background: #1f323f;
+				color: #eee;
+				border: 1px solid #1c6bab;
+				border-radius: 5px;
+				height: 50vh;
+				width: 90vw;
+				box-shadow: inset 0 0 20px #1F1F1F;
+				padding: 10px;
+				resize: none;
+				text-shadow: 0 1px 1px #000;
+			">loading message history...</textarea>
+		<div style="border: 1px solid #3593de;
+		 	background: #354652;
+			border-radius: 5px;
+			margin-top: 10px;
+			padding: 10px;
+			width: 90vw;">
+			<form id="form">
+				<textarea id="message" rows="3" cols="80"
+					placeholder="Message" tabindex="0"
+					style="color: #fff;
+						width: 100%;
+						height: 100%;
+						display: block;
+						border: 0;
+						margin: 0;
+						padding: 0;
+						resize: none;
+						background: transparent;"></textarea>
+				<div style="display: flex; flex-direction: row">
+					<input type="text" id="name" placeholder="Who are you?" tabindex="0"
+						style="padding: 0px;
+						background: transparent;
+						color: #eef6fc;
+						font-size: 12px;
+						border: 0;"/>
+					<button type="submit" title="Send" tabindex="0" id="send"
+						style="margin-left: auto;
+							background: transparent;
+							color: #3593de;
+							border: 1px solid #3593de;
+							font-weight: bold;
+							border-radius: 5px">Send
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</body>
+<script type="text/javascript">
+	const resultbox = document.getElementById('resultbox');
+	const form = document.getElementById('form');
+	const send = document.getElementById('send');
+	const message = document.getElementById('message');
+	const name = document.getElementById('name');
+	let from;
+
+	window.addEventListener('DOMContentLoaded', (event) => {
+		setInterval(pollForMessages, 1000);
+	});
+
+	form.addEventListener('submit', (event) => {
+		event.preventDefault();
+		// store a copy of the name value.
+		if (!from && name.value !== "") {
+			from = name.value;
+			name.disabled = true;
+		}
+		// disable the form until the POST has finished.
+		form.disabled = true;
+		sendNewMessage(message.value);
+	});
+
+	sendNewMessage = (msg) => {
+		send.innerHTML = "...";
+		let request = new XMLHttpRequest();
+		request.open('POST','/js', true);
+		request.onreadystatechange = () => {
+			// reset the form state.
+			form.reset();
+			if (request.readyState == 4 && request.status != "200") {
+				// if the request failed, restore the message.
+				message.value = msg;
+			} else {
+				pollForMessages();
+			}
+			name.value = from;
+			send.innerHTML = "Send";
+		};
+		request.send(JSON.stringify({text: `${from}: ${msg}`}));
+	}
+
+	pollForMessages = () => {
+		let request = new XMLHttpRequest();
+		request.open('GET','/js/get', true);
+		request.onreadystatechange = () => {
+			let value = "Error: Unable to retrive message history..."
+			if (request.readyState == 4 && request.status == "200") {
+				value = request.responseText
+			}
+			resultbox.innerHTML = value;
+		};
+		request.send(null);
+	}
+</script>
+</html>

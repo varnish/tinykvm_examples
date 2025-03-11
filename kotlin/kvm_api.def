@@ -1,0 +1,3 @@
+headers = env/kvm_api.h
+package = libvarnish
+noStringConversion = *

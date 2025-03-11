@@ -1,0 +1,19 @@
+name: Build C++ programs
+
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo DEBIAN_FRONTEND=noninteractive apt -y install build-essential clang
+
+      - name: Build the C++ hello world
+        run: |
+          clang++ -std=c++17 -Wall -static -O2 -o hello cpp/src/hello_world.cpp

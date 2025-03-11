@@ -1,0 +1,5 @@
+libstatic.a
+static_api.h
+libvarnish.klib
+libvarnish-build/
+varnish.klib

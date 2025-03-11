@@ -1,0 +1,25 @@
+name: Build Nelua programs
+
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo DEBIAN_FRONTEND=noninteractive apt -y install build-essential gcc gdb
+          git clone https://github.com/edubart/nelua-lang.git
+          cd nelua-lang
+          make -j4
+          sudo make install
+
+      - name: Build the Nelua hello world
+        run: |
+          cd nelua
+          nelua --print-code example.nelua > example.c
+          gcc -static -O2 -g3 -Wall -Wextra env/main.c example.c -o example

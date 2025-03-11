@@ -1,0 +1,24 @@
+name: Build JavaScript programs
+
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo DEBIAN_FRONTEND=noninteractive apt -y install build-essential cmake
+
+      - name: Build the JavaScript chat example
+        run: |
+          mkdir -p javascript/.build
+          cd javascript
+          python3 static_builder.py www .build/static_site.c
+          cd .build
+          cmake .. -DJSFILE=src/chat.js
+          make -j4

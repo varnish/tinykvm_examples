@@ -1,0 +1,6 @@
+.build/
+minimal/minimal
+minimal/storage
+collector/collector
+collector/storage
+*.syms

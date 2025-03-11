@@ -1,0 +1,43 @@
+name: Build Nim programs
+
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo DEBIAN_FRONTEND=noninteractive apt -y install xz-utils build-essential gcc curl
+          curl -LO https://nim-lang.org/download/nim-1.6.6-linux_x64.tar.xz
+          tar -xvf nim-1.6.6-linux_x64.tar.xz
+          echo "${{ github.workspace }}/nim-1.6.6/bin" >> $GITHUB_PATH
+
+      - name: Build the Nim hello world
+        run: |
+          cd nim
+          nim c --app:staticLib --gc:arc --noMain --cincludes:env --path:env hello.nim
+          gcc -static -O2 -g3 -Wl,--whole-archive libhello.a -Wl,--no-whole-archive -lm env/main.c env/http.c -o hello
+
+      - name: Build the Nim storage example
+        run: |
+          cd nim
+          nim c --app:staticLib --gc:arc --noMain --cincludes:env --path:env storage_example.nim
+          gcc -static -O2 -g3 -Wl,--whole-archive libstorage_example.a -Wl,--no-whole-archive -lm env/main.c env/http.c -o storage_example
+
+      - name: Build the Nim prefetch_task example
+        run: |
+          cd nim
+          nim c --app:staticLib --gc:arc --noMain --cincludes:env --path:env prefetch_task.nim
+          gcc -static -O2 -g3 -Wl,--whole-archive libprefetch_task.a -Wl,--no-whole-archive -lm env/main.c env/http.c -o prefetch_task
+
+      - name: Build the Nim watermark example
+        run: |
+          nimble -y install pixie
+          cd nim
+          nim c --app:staticLib --gc:arc --noMain --cincludes:env --path:env watermark.nim
+          gcc -static -O2 -g3 -Wl,--whole-archive libwatermark.a -Wl,--no-whole-archive -lm env/main.c env/http.c -o watermark

@@ -1,0 +1,45 @@
+--
+--  Varnish API for the Nelua Language
+--
+require 'string'
+
+global varnish = @record{}
+-- HTTP methods
+global varnish.response: function(status: integer, content_type: string, content: string)
+global varnish.set_backend_get: function(func: function(string, string))
+function varnish.wait_for_requests(): void <cimport 'wait_for_requests'> end
+-- HTTP fields
+global varnish.set: function(field: string)
+
+local function register_func(id: cint, func: function(cstring, cstring)): void <cimport>
+end
+
+local function backend_response(status: cint, ct: cstring, ctlen: cint, cont: cstring, contlen: cint): void <cimport>
+end
+
+local backend_get: function(string, string)
+local function on_get(url: cstring, arg: cstring)
+    backend_get(url, arg)
+end
+
+varnish.set_backend_get = function(func: function(string, string))
+    backend_get = func
+    register_func(1, on_get)
+end
+
+varnish.response = function(status: integer, content_type: string, content: string)
+    backend_response(status, content_type, #content_type, content, #content)
+end
+
+local function sys_http_set(id: cint, f: cstring, l: cint): void <cimport>
+end
+varnish.set = function(field: string)
+    sys_http_set(5, field, #field)
+end
+
+##[[
+function embed(path)
+  local file <close> = io.open(path)
+  return file:read('a')
+end
+]]

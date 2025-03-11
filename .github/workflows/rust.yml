@@ -1,0 +1,19 @@
+name: Build Rust programs
+
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: stable
+          targets: x86_64-unknown-linux-musl
+
+      - name: Build the Rust PNG example
+        run: |
+          cd rust/png
+          cargo build --release --target=x86_64-unknown-linux-musl

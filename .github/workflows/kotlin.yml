@@ -1,0 +1,27 @@
+name: Build Kotlin programs
+
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo DEBIAN_FRONTEND=noninteractive apt -y install build-essential curl clang
+          curl -LO https://github.com/JetBrains/kotlin/releases/download/v1.7.0/kotlin-native-linux-x86_64-1.7.0.tar.gz
+          tar -zxvf kotlin-native-linux-x86_64-1.7.0.tar.gz
+          echo "${{ github.workspace }}/kotlin-native-linux-x86_64-1.7.0/bin" >> $GITHUB_PATH
+
+      - name: Build the Kotlin hello world
+        run: |
+          cd kotlin
+          source interop.sh # should only be run once
+          kotlinc-native -produce library varnish.kt -l libvarnish -o varnish
+          kotlinc-native -produce static main.kt -l varnish
+          clang -std=gnu99 -O2 -c env/main.c -o main.o
+          clang++ -O2 -static main.o libstatic.a -pthread -ldl -o program

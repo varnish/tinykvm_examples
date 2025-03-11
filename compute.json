@@ -1,0 +1,207 @@
+{
+	"compute": {
+		"concurrency": 2,
+		"max_boot_time": 8.0,
+		"max_request_time": 6.0,
+		"max_memory": 64,
+		"max_request_memory": 48,
+		"req_mem_limit_after_reset": 16 /* Mbytes */
+	},
+	"avif": {
+		"group": "compute",
+		"uri": "https://filebin.varnish-software.com/tinykvm_programs/avifencode.tar.xz",
+		"filename": "/tmp/compute_avif",
+		"max_memory": 128,
+		"max_request_memory": 64,
+		"concurrency": 2
+	},
+	"base64": {
+		"group": "compute",
+		"uri": "https://filebin.varnish-software.com/tinykvm_programs/base64pp.tar.xz",
+		"filename": "/tmp/compute_base64",
+		"concurrency": 2
+	},
+	"basicauth": {
+		"group": "compute",
+		"uri": "https://filebin.varnish-software.com/tinykvm_programs/basicauth.tar.xz",
+		"filename": "/tmp/compute_basicauth",
+		"storage": true
+	},
+	"collector": {
+		"group": "compute",
+		"uri": "https://filebin.varnish-software.com/tinykvm_programs/collector.tar.xz",
+		"filename": "/tmp/compute_collector",
+		"storage": true,
+		"ephemeral": false
+	},
+	"counter": {
+		"group": "compute",
+		"uri": "https://filebin.varnish-software.com/tinykvm_programs/scounter.tar.xz",
+		"filename": "/tmp/compute_counter",
+		"shared_memory": 2,
+		"concurrency": 4,
+		"ephemeral": false
+	},
+	"espeak": {
+		"group": "compute",
+		"uri": "https://filebin.varnish-software.com/tinykvm_programs/espeak.tar.xz",
+		"filename": "/tmp/compute_espeak",
+		"allowed_paths": [
+			"/usr/lib/x86_64-linux-gnu/espeak-ng-data",
+			"/usr/local/share/espeak-ng-data"
+		]
+		},
+	"fetch": {
+		"group": "compute",
+		"uri": "https://filebin.varnish-software.com/tinykvm_programs/fetch.tar.xz",
+		"filename": "/tmp/compute_fetch",
+		"max_request_time": 16.0
+	},
+	"gbc": {
+		"group": "compute",
+		"uri": "https://filebin.varnish-software.com/tinykvm_programs/gbcemu.tar.xz",
+		"filename": "/tmp/compute_gbcemu",
+		"max_memory": 128,
+		"max_request_memory": 64,
+		"shared_memory": 2,
+		"concurrency": 4,
+		"storage": true
+	},
+	"go": {
+		"uri": "https://filebin.varnish-software.com/tinykvm_programs/goexample.tar.xz",
+		"max_memory": 2048,
+		"remapping": ["0xC000000000", 256],
+		"concurrency": 4,
+		"storage": true
+	},
+	"inflate": {
+		"group": "compute",
+		"uri": "https://filebin.varnish-software.com/tinykvm_programs/inflate",
+		"filename": "/tmp/compute_inflate"
+	},
+	"hello": {
+		"group": "compute",
+		"uri": "https://filebin.varnish-software.com/tinykvm_programs/hello_world.tar.xz",
+		"filename": "/tmp/compute_hello_world",
+		"concurrency": 2,
+		"storage": true
+	},
+	"jsapp": {
+		"group": "compute",
+		"uri": "https://filebin.varnish-software.com/tinykvm_programs/jsapp.tar.xz",
+		"filename": "/tmp/compute_jsapp",
+		"concurrency": 2,
+		"storage": true
+	},
+	"llama": {
+		"group": "compute",
+		//"uri": "https://filebin.varnish-software.com/tinykvm_programs/llamapp.tar.xz",
+		"uri": "file:///home/gonzo/github/kvm_demo/cpp/llama/.build/llamapp",
+		"filename": "/tmp/compute_llamapp",
+		"allowed_paths": [
+			"/tmp/llama.f16",
+			"/sys/devices/system/cpu/online"
+		],
+		"max_memory": 6400,
+		"max_request_memory": 384,
+		"concurrency": 16,
+		"max_boot_time": 12.0,
+		"max_request_time": 32.0,
+		"req_mem_limit_after_reset": 320 /* Mbytes */
+	},
+	"minimal": {
+		"group": "compute",
+		"uri": "https://filebin.varnish-software.com/tinykvm_programs/minimal.tar.xz",
+		"filename": "/tmp/compute_minimal",
+		"max_memory": 10,
+		"max_request_memory": 4,
+		"concurrency": 2,
+		"storage": true,
+		"ephemeral": false
+	},
+	"minify": {
+		"group": "compute",
+		"uri": "https://filebin.varnish-software.com/tinykvm_programs/minify.tar.xz",
+		"filename": "/tmp/compute_minify"
+	},
+	"rust": {
+		"group": "compute",
+		"uri": "https://filebin.varnish-software.com/tinykvm_programs/rustpng.tar.xz",
+		"filename": "/tmp/compute_rust"
+	},
+	"nim_storage": {
+		"group": "compute",
+		"uri": "https://filebin.varnish-software.com/tinykvm_programs/storage_example.tar.xz",
+		"filename": "/tmp/compute_nim_storage",
+		"storage": true
+	},
+	"nim_prefetch_task": {
+		"group": "compute",
+		"uri": "https://filebin.varnish-software.com/tinykvm_programs/prefetch_task.tar.xz",
+		"filename": "/tmp/compute_nim_prefetch_task",
+		"storage": true
+	},
+	"stable_diffusion": {
+		"group": "compute",
+		"uri": "https://filebin.varnish-software.com/tinykvm_programs/sdpp.tar.xz",
+		"filename": "/tmp/compute_sdpp",
+		"allowed_paths": [
+			"/tmp/model.f16"
+		],
+		"max_memory": 3200,
+		"max_request_memory": 2400,
+		"concurrency": 1,
+		"max_boot_time": 16.0,
+		"max_request_time": 120.0
+	},
+	"stockfish": {
+		"group": "compute",
+		"uri": "https://filebin.varnish-software.com/tinykvm_programs/stockfish.tar.xz",
+		"filename": "/tmp/compute_stockfish",
+		"max_memory": 512,
+		"concurrency": 2,
+		"req_mem_limit_after_reset": 16
+	},
+	"thumbnails": {
+		"group": "compute",
+		"uri": "https://filebin.varnish-software.com/tinykvm_programs/thumbnails.tar.xz",
+		"max_memory": 512,
+		"max_request_memory": 512,
+		"filename": "/tmp/compute_thumbnails"
+	},
+	"to_string": {
+		"group": "compute",
+		"uri": "https://filebin.varnish-software.com/tinykvm_programs/to_string.tar.xz",
+		"filename": "/tmp/compute_to_string",
+		"max_request_time": 16.0
+	},
+	"watermark": {
+		"group": "compute",
+		"uri": "https://filebin.varnish-software.com/tinykvm_programs/watermark.tar.xz",
+		"filename": "/tmp/compute_watermark",
+		"max_memory": 128,
+		"max_request_memory": 64
+	},
+	"webp": {
+		"group": "compute",
+		"uri": "https://filebin.varnish-software.com/tinykvm_programs/webpencoder.tar.xz",
+		"filename": "/tmp/compute_webp",
+		"max_memory": 128,
+		"max_request_memory": 64,
+		"concurrency": 2
+	},
+	"xml": {
+		"group": "compute",
+		"uri": "https://filebin.varnish-software.com/tinykvm_programs/xmlpp.tar.xz",
+		"filename": "/tmp/compute_xml",
+		"max_memory": 64,
+		"max_request_memory": 16
+	},
+	"zstd": {
+		"group": "compute",
+		"uri": "https://filebin.varnish-software.com/tinykvm_programs/zstdpp.tar.xz",
+		"filename": "/tmp/compute_zstd",
+		"max_memory": 64,
+		"max_request_memory": 16
+	}
+}

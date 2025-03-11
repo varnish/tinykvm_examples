@@ -1,0 +1,1 @@
+../stable-diffusion.cpp/examples/stb_image_write.h

@@ -1,0 +1,12 @@
+require 'varnish'
+local image = #[embed '../assets/rose.jpg']#
+
+local function on_get(url: string, arg: string)
+
+    varnish.set("X-Language: " .. _VERSION)
+
+    varnish.response(200, "image/jpeg", image)
+end
+
+varnish.set_backend_get(on_get)
+varnish.wait_for_requests()
