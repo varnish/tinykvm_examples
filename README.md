@@ -45,12 +45,12 @@ There are several examples in the documentation, as well how to use the VMOD fro
 
 - C: Go into the [c folder](c) and edit [hello_world.c](c/hello_world.c)
 - C++: Go into the [cpp folder](cpp) and edit [hello_world.cpp](cpp/src/hello_world.cpp)
-- Go: Go into the [go folder](go) and edit [hello_world.go](go/varnish/hello_world.go)
+- Go: Go into the [go folder](go) and edit [goexample.go](go/goexample/goexample.go)
 - Kotlin: Go into the [kotlin folder](kotlin) and edit [main.kt](kotlin/main.kt)
 - Nelua: Go into the [nelua folder](nelua) and edit [example.nelua](nelua/example.nelua)
 - Nim: Go into the [nim folder](nim) and edit [hello.nim](nim/hello.nim)
 - JavaScript: Go into the [javascript folder](javascript) and edit [chat.js](javascript/src/chat.js)
-- Rust: Go into the [rust folder](rust) and edit [main.rs](rust/src/main.rs)
+- Rust: Go into the [rust folder](rust) and edit [main.rs](rust/static/src/main.rs)
 - Zig: Go into the [zig folder](zig) and edit [example.zig](zig/example.zig)
 
 You can find the C API here: [kvm_api.h](kvm_api.h). It contains the complete API with some explanations and examples. The API is not necessarily intended for end-users, but it is required for those who wants to integrate other languages.
