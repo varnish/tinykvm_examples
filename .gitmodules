@@ -46,3 +46,6 @@
 [submodule "cpp/ext/Turbo-Base64"]
 	path = cpp/ext/Turbo-Base64
 	url = https://github.com/powturbo/Turbo-Base64.git
+[submodule "v8/v8-cmake"]
+	path = v8/v8-cmake
+	url = git@github.com:bnoordhuis/v8-cmake.git

@@ -175,6 +175,11 @@
 		"filename": "/tmp/compute_to_string",
 		"max_request_time": 16.0
 	},
+	"v8": {
+		"group": "compute",
+		"uri": "https://filebin.varnish-software.com/tinykvm_programs/computeV8.tar.xz",
+		"filename": "/tmp/compute_v8"
+	},
 	"watermark": {
 		"group": "compute",
 		"uri": "https://filebin.varnish-software.com/tinykvm_programs/watermark.tar.xz",
