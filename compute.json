@@ -178,7 +178,11 @@
 	"v8": {
 		"group": "compute",
 		"uri": "https://filebin.varnish-software.com/tinykvm_programs/computeV8.tar.xz",
-		"filename": "/tmp/compute_v8"
+		"filename": "/tmp/compute_v8",
+		"max_memory": 1024,
+		"max_boot_time": 32.0,
+		"allow_debug": false,
+		"executable_heap": true
 	},
 	"watermark": {
 		"group": "compute",

@@ -140,7 +140,7 @@ int main(int argc, char* argv[])
 	// Initialize V8.
 	v8::V8::InitializeICUDefaultLocation(argv[0]);
 	v8::V8::InitializeExternalStartupData(argv[0]);
-	v8::V8::SetFlagsFromString("--jitless");
+	v8::V8::SetFlagsFromString("--turbofan --single-threaded --single-threaded-gc");
 	std::unique_ptr<v8::Platform> platform = v8::platform::NewDefaultPlatform();
 	v8::V8::InitializePlatform(platform.get());
 	v8::V8::Initialize();
@@ -187,7 +187,19 @@ int main(int argc, char* argv[])
 		// Warmup
 		(void)invoke("/", "");
 
-		set_backend_get(on_get);
-		wait_for_requests();
+		if constexpr (true)
+		{
+			// Wait for requests
+			struct backend_request req;
+			wait_for_requests_paused(&req);
+
+			const auto resp = invoke(req.url, req.arg);
+			backend_response(resp.status,
+				resp.content_type.begin(), resp.content_type.size(),
+				*resp.content, resp.content.length());
+		} else {
+			set_backend_get(on_get);
+			wait_for_requests();
+		}
 	}
 }

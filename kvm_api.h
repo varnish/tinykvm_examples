@@ -3,7 +3,7 @@
  * @author Alf-André Walla (fwsgonzo@hotmail.com)
  * @brief 
  * @version 1.0
- * @date 2023-08-23
+ * @date 2025-03-11
  * 
  * Single-source-of-truth API header for the KVM and Compute VMODs.
  * Languages can use the C API directly, or indirectly through
@@ -66,7 +66,7 @@ struct backend_request {
 	uint16_t    arg_len;
 	uint16_t    content_type_len;
 	const uint8_t *content; /* Can be NULL. */
-	const size_t   content_len;
+	size_t         content_len;
 };
 static inline void set_backend_request(void(*f)(const struct backend_request*)) { register_func(3, f); }
 
@@ -92,6 +92,12 @@ static inline void set_on_live_restore(void(*f)(size_t datalen)) { register_func
    including startup arguments and stack values. Future requests will use
    a new stack, and will not trample the old stack, including red-zone. */
 extern void wait_for_requests();
+
+/* Wait for requests by pausing the machine and recording the current
+   state of machine registers. This allowed resumption in event loops
+   and other types of event-driven programming. Request URL and other
+   data can be retrieved from the struct backend_request argument. */
+extern void wait_for_requests_paused(struct backend_request* req);
 
 /**
  * When a request arrives the handler function is the only function that will
@@ -144,6 +150,8 @@ static const int REQ      = 0;
 static const int RESP     = 1;
 static const int REQUEST  = REQ;
 static const int RESPONSE = RESP;
+static const int BEREQ    = 4;
+static const int BERESP   = 5;
 static const unsigned HTTP_FMT_SIZE = 4096; /* Most header fields fit. */
 
 extern long
@@ -754,6 +762,13 @@ asm(".global wait_for_requests\n"
 	"	mov $0x10001, %eax\n"
 	"	out %eax, $0\n");
 
+asm(".global wait_for_requests_paused\n"
+	".type wait_for_requests_paused, @function\n"
+	"wait_for_requests_paused:\n"
+	"	mov $0x10002, %eax\n"
+	"	out %eax, $0\n"
+	"	ret\n");
+
 asm(".global sys_set_cacheable\n"
 	".type sys_set_cacheable, @function\n"
 	"sys_set_cacheable:\n"
@@ -966,6 +981,12 @@ asm(".global vcpuid\n"
 	".type vcpuid, @function\n"
 	"vcpuid:\n"
 	"	mov %gs:(0x0), %eax\n"
+	"   ret\n");
+
+asm(".global vcpureqid\n"
+	".type vcpureqid, @function\n"
+	"vcpureqid:\n"
+	"	mov %gs:(0x4), %eax\n"
 	"   ret\n");
 
 asm(".global get_meminfo\n"
