@@ -144,3 +144,16 @@ pub fn wait_for_requests() -> !
 		);
 	}
 }
+
+/** Debugging and introspection **/
+
+#[inline]
+pub fn breakpoint() -> !
+{
+	unsafe {
+		asm!("out 0x0, eax",
+			in("eax") 0x7F7F7,
+			options(noreturn)
+		);
+	}
+}
