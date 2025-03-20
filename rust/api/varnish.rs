@@ -1,5 +1,6 @@
 use std::arch::asm;
 use std::cell::RefCell;
+use std::mem::MaybeUninit;
 use core::ffi::CStr;
 use core::ffi::c_char;
 
@@ -145,15 +146,72 @@ pub fn wait_for_requests() -> !
 	}
 }
 
+/*
+struct backend_request {
+	const char *method;
+	const char *url;
+	const char *arg;
+	const char *content_type;
+	uint16_t    method_len;
+	uint16_t    url_len;
+	uint16_t    arg_len;
+	uint16_t    content_type_len;
+	const uint8_t *content; /* Can be NULL. */
+	size_t         content_len;
+};
+*/
+pub struct Request {
+	pub method: *const c_char,
+	pub url: *const c_char,
+	pub arg: *const c_char,
+	pub content_type: *const c_char,
+	pub method_len: u16,
+	pub url_len: u16,
+	pub arg_len: u16,
+	pub content_type_len: u16,
+	pub content: *const u8,
+	pub content_len: usize,
+}
+
+impl Request {
+	pub fn method(&self) -> &str {
+		unsafe { CStr::from_ptr(self.method).to_str().unwrap() }
+	}
+	pub fn url(&self) -> &str {
+		unsafe { CStr::from_ptr(self.url).to_str().unwrap() }
+	}
+	pub fn arg(&self) -> &str {
+		unsafe { CStr::from_ptr(self.arg).to_str().unwrap() }
+	}
+	pub fn content_type(&self) -> &str {
+		unsafe { CStr::from_ptr(self.content_type).to_str().unwrap() }
+	}
+	pub fn content(&self) -> &[u8] {
+		unsafe { std::slice::from_raw_parts(self.content, self.content_len) }
+	}
+}
+
+#[inline]
+pub fn wait_for_requests_paused() -> Request
+{
+	unsafe {
+		let mut req = MaybeUninit::<Request>::uninit();
+		asm!("out 0x0, eax",
+			in("eax") 0x10002,
+			in("rdi") req.as_mut_ptr(),
+		);
+		return req.assume_init();
+	}
+}
+
 /** Debugging and introspection **/
 
 #[inline]
-pub fn breakpoint() -> !
+pub fn breakpoint()
 {
 	unsafe {
 		asm!("out 0x0, eax",
-			in("eax") 0x7F7F7,
-			options(noreturn)
+			in("eax") 0x7F7F7
 		);
 	}
 }

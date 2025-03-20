@@ -15,7 +15,18 @@ fn on_post(_url: &str, _arg: &str, ctype: &str, data: &mut [u8]) -> !
 
 fn main()
 {
-	varnish::set_backend_get(on_get);
-	varnish::set_backend_post(on_post);
-	varnish::wait_for_requests();
+	if false {
+		varnish::set_backend_get(on_get);
+		varnish::set_backend_post(on_post);
+		varnish::wait_for_requests();
+	}
+	else {
+		loop {
+			let request = varnish::wait_for_requests_paused();
+			let mut resp : String = "Hello, world! URL=".to_string();
+			resp.push_str(&request.url());
+
+			varnish::backend_response_str(200, "text/plain", &resp);
+		}
+	}
 }
