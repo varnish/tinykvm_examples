@@ -115,7 +115,7 @@ extern void wait_for_requests_paused(struct backend_request* req);
  *  	backend_response(200, ctype, strlen(ctype), cont, strlen(cont));
  *  }
  **/
-extern void __attribute__((noreturn, used))
+extern void __attribute__((used))
 backend_response(int16_t status, const void *t, size_t, const void *c, size_t);
 
 static inline void
@@ -782,6 +782,7 @@ asm(".global backend_response\n"
 	".cfi_startproc\n"
 	"	mov $0x10010, %eax\n"
 	"	out %eax, $0\n"
+	"	ret\n"
 	".cfi_endproc\n");
 
 asm(".global begin_streaming_response\n"

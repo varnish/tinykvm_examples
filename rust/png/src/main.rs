@@ -1,7 +1,7 @@
 mod varnish;
 use std::io::BufWriter;
 
-fn on_get(url: &str, _arg: &str) -> !
+fn on_get(url: &str, _arg: &str)
 {
 	/* Generate luxurious and expensive blue color. */
 	const IMG_WIDTH: usize = 1024;
@@ -41,7 +41,7 @@ fn on_get(url: &str, _arg: &str) -> !
 		&bufwriter.into_inner().expect(""));
 }
 
-fn on_post(_url: &str, _arg: &str, ctype: &str, data: &mut [u8]) -> !
+fn on_post(_url: &str, _arg: &str, ctype: &str, data: &mut [u8])
 {
 	varnish::set_cacheable(false, 1.0, 0.0, 0.0);
 	varnish::backend_response(200, ctype, data);

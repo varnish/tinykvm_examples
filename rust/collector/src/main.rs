@@ -16,14 +16,14 @@ fn register_url(url: &str)
 	varnish::log(&format!("Added URL {}", url));
 }
 
-fn on_get(url: &str, _arg: &str) -> !
+fn on_get(url: &str, _arg: &str)
 {
 	register_url(url);
 
 	varnish::backend_response_str(200, "text/plain", "Collected");
 }
 
-fn on_post(url: &str, _arg: &str, ctype: &str, data: &mut [u8]) -> !
+fn on_post(url: &str, _arg: &str, ctype: &str, data: &mut [u8])
 {
 	register_url(url);
 

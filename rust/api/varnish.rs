@@ -52,7 +52,7 @@ pub fn set_cacheable(cached: bool, ttl: f32, grace: f32, keep: f32)
 }
 
 #[inline]
-pub fn backend_response(status: u16, ctype: &str, data: &[u8]) -> !
+pub fn backend_response(status: u16, ctype: &str, data: &[u8])
 {
 	unsafe {
 		asm!("out 0x0, eax",
@@ -61,25 +61,24 @@ pub fn backend_response(status: u16, ctype: &str, data: &[u8]) -> !
 			in("rsi") ctype.as_ptr(),
 			in("rdx") ctype.len(),
 			in("rcx") data.as_ptr(),
-			in("r8")  data.len(),
-			options(noreturn)
+			in("r8")  data.len()
 		);
 	}
 }
 
 #[inline]
-pub fn backend_response_str(status: u16, ctype: &str, data: &str) -> !
+pub fn backend_response_str(status: u16, ctype: &str, data: &str)
 {
 	backend_response(status, ctype, data.as_bytes());
 }
 
 /** Methods **/
-pub type GetHandler = fn(url: &str, arg: &str) -> !;
-fn default_get_handler(_url: &str, _arg: &str) -> ! {
+pub type GetHandler = fn(url: &str, arg: &str);
+fn default_get_handler(_url: &str, _arg: &str) {
 	backend_response_str(404, "text/plain", "No such page");
 }
-pub type PostHandler = fn(url: &str, arg: &str, ctype: &str, data: &mut [u8]) -> !;
-fn default_post_handler(_url: &str, _arg: &str, _ctype: &str, _data: &mut [u8]) -> ! {
+pub type PostHandler = fn(url: &str, arg: &str, ctype: &str, data: &mut [u8]);
+fn default_post_handler(_url: &str, _arg: &str, _ctype: &str, _data: &mut [u8]) {
 	backend_response_str(404, "text/plain", "No such page");
 }
 
@@ -91,7 +90,7 @@ thread_local! {
 }
 
 extern "C"
-fn sys_on_get(c_url: *const c_char, c_arg: *const c_char) -> !
+fn sys_on_get(c_url: *const c_char, c_arg: *const c_char)
 {
 	let url = unsafe { CStr::from_ptr(c_url).to_str().unwrap() };
 	let arg = unsafe { CStr::from_ptr(c_arg).to_str().unwrap() };
@@ -112,7 +111,7 @@ pub fn set_backend_get(cb: GetHandler)
 }
 
 extern "C"
-fn sys_on_post(c_url: *mut i8, c_arg: *mut i8, c_ctype: *mut i8, c_data: *mut u8, c_size: usize) -> !
+fn sys_on_post(c_url: *mut i8, c_arg: *mut i8, c_ctype: *mut i8, c_data: *mut u8, c_size: usize)
 {
 	let url = unsafe { CStr::from_ptr(c_url).to_str().unwrap() };
 	let arg = unsafe { CStr::from_ptr(c_arg).to_str().unwrap() };
