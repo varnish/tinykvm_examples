@@ -13,7 +13,8 @@ set(SOURCES
 add_executable(avifencode ${SOURCES})
 set_target_properties(avifencode PROPERTIES CXX_STANDARD 17)
 if (NATIVE)
-	target_compile_options(avifencode PRIVATE -Ofast -fno-fast-math)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native -Ofast -fno-fast-math")
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=native -Ofast -fno-fast-math")
 endif()
 
 option(BUILD_SHARED_LIBS "" OFF)
@@ -27,6 +28,7 @@ add_subdirectory(libjpeg-turbo)
 add_subdirectory(../ext/json json)
 
 target_link_libraries(avifencode -static avif nlohmann_json turbojpeg-static -Wl,-s,-X)
+target_link_libraries(avifencode -Wl,-Ttext-segment=0x1FF000)
 target_include_directories(avifencode PRIVATE
 	libjpeg-turbo ${CMAKE_CURRENT_BINARY_DIR}/libjpeg-turbo
 )
