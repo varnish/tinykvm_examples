@@ -69,8 +69,9 @@
 	},
 	"go": {
 		"uri": "https://filebin.varnish-software.com/tinykvm_programs/goexample.tar.xz",
-		"max_memory": 2048,
+		"max_memory": 1800,
 		"remapping": ["0xC000000000", 256],
+		"relocate_fixed_mmap": false,
 		"concurrency": 4,
 		"storage": true
 	},
