@@ -40,7 +40,7 @@ static avifRWData avifOutput;
 
 /* This function decodes a JPEG and encodes an AVIF, with medium quality. */
 template <bool IsKVM>
-void produce_image(const uint8_t *source_image, const size_t source_image_len)
+void produce_image(const uint8_t *source_image, const size_t source_image_len, int quality = 75, int speed = 6)
 {
 #if USE_LIBJPEG
 	struct jpeg_decompress_struct cinfo;
@@ -132,7 +132,8 @@ void produce_image(const uint8_t *source_image, const size_t source_image_len)
 	if (encoder) avifEncoderDestroy(encoder);
 	encoder = avifEncoderCreate();
 	encoder->maxThreads = 1;
-	encoder->speed = AVIF_SPEED_FASTEST;
+	encoder->speed = speed;
+	encoder->quality = quality;
 	encoder->minQuantizer = 0; // 0-63
 	encoder->maxQuantizer = 63; // 0-63
 	avifResult imgres =
@@ -168,10 +169,19 @@ static void
 on_get(const char *url, const char *arg)
 {
 	Curl::Result image;
+	int quality = 75;
+	int speed = 6;
 	auto arglen = strlen(arg);
 	if (arglen > 0)
 	{
 		const auto j = nlohmann::json::parse(arg, arg + arglen, nullptr, true, true);
+
+		if (j.contains("quality")) {
+			quality = j["quality"].get<int>();
+		}
+		if (j.contains("speed")) {
+			speed = j["speed"].get<int>();
+		}
 
 		std::vector<std::string> headers;
 		if (j.contains("headers")) {
@@ -199,7 +209,7 @@ on_get(const char *url, const char *arg)
 		current_img = (const uint8_t *)image.content.begin();
 		current_img_size = image.content.size();
 
-		produce_image<true>(current_img, current_img_size);
+		produce_image<true>(current_img, current_img_size, quality, speed);
 	}
 	else {
 		// Probably an error.
@@ -208,12 +218,27 @@ on_get(const char *url, const char *arg)
 }
 
 static void
-on_post(const char *url, const char *, const char *, const uint8_t *src, size_t len)
+on_post(const char *url, const char *arg, const char *, const uint8_t *src, size_t len)
 {
+	int quality = 75;
+	int speed = 6;
+	auto arglen = strlen(arg);
+	if (arglen > 0)
+	{
+		const auto j = nlohmann::json::parse(arg, arg + arglen, nullptr, true, true);
+
+		if (j.contains("quality")) {
+			quality = j["quality"].get<int>();
+		}
+		if (j.contains("speed")) {
+			speed = j["speed"].get<int>();
+		}
+	}
+
 	/* You can POST a JPEG file and have it converted to AVIF. */
 	current_img = src;
 	current_img_size = len;
-	produce_image<true>(src, len);
+	produce_image<true>(src, len, quality, speed);
 }
 
 /* on_error can be used as a fallback function where we can

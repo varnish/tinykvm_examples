@@ -58,11 +58,11 @@ static void transform(T& j,
 		if (ZSTD_isError(cSize)) {
 			Http::append(RESP, "X-Error: true");
 			// Let's not send original if the decompression fails
-			Backend::response(500, "text/plain", "Failed to decompress asset");
+			Backend::response(500, "text/plain", "Failed to compress asset");
 		}
 		else {
 			Http::set(RESP, "Content-Encoding: zstd");
-			// Send decompressed shit
+			// Send compressed asset
 			backend_response(200, "", 0, cBuff, cSize);
 		}
 	}
