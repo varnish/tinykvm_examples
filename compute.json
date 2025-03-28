@@ -96,8 +96,7 @@
 	},
 	"llama": {
 		"group": "compute",
-		//"uri": "https://filebin.varnish-software.com/tinykvm_programs/llamapp.tar.xz",
-		"uri": "file:///home/gonzo/github/kvm_demo/cpp/llama/.build/llamapp",
+		"uri": "https://filebin.varnish-software.com/tinykvm_programs/llamapp.tar.xz",
 		"filename": "/tmp/compute_llamapp",
 		"allowed_paths": [
 			"/tmp/llama.f16",
@@ -180,9 +179,10 @@
 		"group": "compute",
 		"uri": "https://filebin.varnish-software.com/tinykvm_programs/computeV8.tar.xz",
 		"filename": "/tmp/compute_v8",
-		"max_memory": 1024,
+		"address_space": 1024,
+		"max_memory": 80,
 		"max_boot_time": 32.0,
-		"allow_debug": false,
+		"ephemeral": false,
 		"executable_heap": true
 	},
 	"watermark": {

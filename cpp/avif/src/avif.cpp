@@ -169,8 +169,10 @@ static void
 on_get(const char *url, const char *arg)
 {
 	Curl::Result image;
+	std::vector<std::string> headers;
 	int quality = 75;
 	int speed = 6;
+
 	auto arglen = strlen(arg);
 	if (arglen > 0)
 	{
@@ -183,18 +185,20 @@ on_get(const char *url, const char *arg)
 			speed = j["speed"].get<int>();
 		}
 
-		std::vector<std::string> headers;
 		if (j.contains("headers")) {
 			headers = j["headers"].get<std::vector<std::string>>();
 		}
+	}
 
+	if (strlen(url) > 0) {
 		struct curl_options options = {};
 		options.follow_location = true;
 		options.dont_verify_host = true;
 
 		image = Curl::fetch(url, headers, &options);
 	}
-	else {
+	else
+	{
 		// Benchmarking mode
 		image = {
 			.status = 200,
