@@ -427,7 +427,7 @@ struct virtbuffer {
  * static size_t cont_len = 0;
  *
  * static void
- * modify_content(size_t n, struct virtbuffer buffers[n], size_t res)
+ * modify_content(size_t n, struct virtbuffer buffers[], size_t res)
  * {
  *     // Allocate a new zero-terminated buffer from input
  *     char *new_buf = malloc(buffers[0].len + 1);
@@ -443,7 +443,7 @@ struct virtbuffer {
  *     storage_return_nothing();
  * }
  * static void
- * get_content(size_t n, struct virtbuffer buffers[n], size_t res)
+ * get_content(size_t n, struct virtbuffer buffers[], size_t res)
  * {
  *     storage_return(cont, cont_len);
  * }
@@ -472,7 +472,7 @@ struct virtbuffer {
  * from the function. This allows the system to copy the data back to the
  * request program before the function has returned and deallocated the data.
 **/
-typedef void (*storage_func) (size_t n, struct virtbuffer[n], size_t res);
+typedef void (*storage_func) (size_t n, struct virtbuffer[], size_t res);
 
 /* Returns true (1) if called from storage. */
 extern int
@@ -480,7 +480,7 @@ sys_is_storage();
 
 /* Transfer an array of buffers to storage, transfer output into @dst. */
 extern long
-storage_callv(storage_func, size_t n, const struct virtbuffer[n], void* dst, size_t);
+storage_callv(storage_func, size_t n, const struct virtbuffer[], void* dst, size_t);
 
 /* Transfer an array to storage, transfer output into @dst. */
 static inline long
@@ -599,7 +599,13 @@ extern struct shared_memory_info shared_memory_area();
 
 /* Allocate pointers to shared memory with given size and alignment. */
 #define SHM_ALLOC_BYTES(x) internal_shm_alloc(x, 8)
-#define SHM_ALLOC_TYPE(x) (typeof(x) *)internal_shm_alloc(sizeof(x), _Alignof(x))
+#ifdef __cplusplus
+#define SHM_ALLOC_TYPE(x) (x *)internal_shm_alloc(sizeof(x), alignof(x))
+#define SHM_ALLOC(x) (decltype(x) *)internal_shm_alloc(sizeof(x), alignof(x))
+#else
+#define SHM_ALLOC_TYPE(x) (x *)internal_shm_alloc(sizeof(x), _Alignof(x))
+#define SHM_ALLOC(x) (typeof(x) *)internal_shm_alloc(sizeof(x), _Alignof(x))
+#endif
 static inline void * internal_shm_alloc(size_t size, size_t align) {
 	static struct shared_memory_info info;
 	if (info.ptr == 0x0) {

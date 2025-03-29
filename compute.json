@@ -63,7 +63,6 @@
 		"filename": "/tmp/compute_gbcemu",
 		"max_memory": 128,
 		"max_request_memory": 64,
-		"shared_memory": 2,
 		"concurrency": 4,
 		"storage": true
 	},
@@ -124,11 +123,6 @@
 		"uri": "https://filebin.varnish-software.com/tinykvm_programs/minify.tar.xz",
 		"filename": "/tmp/compute_minify"
 	},
-	"rust": {
-		"group": "compute",
-		"uri": "https://filebin.varnish-software.com/tinykvm_programs/rustpng.tar.xz",
-		"filename": "/tmp/compute_rust"
-	},
 	"nim_storage": {
 		"group": "compute",
 		"uri": "https://filebin.varnish-software.com/tinykvm_programs/storage_example.tar.xz",
@@ -140,6 +134,17 @@
 		"uri": "https://filebin.varnish-software.com/tinykvm_programs/prefetch_task.tar.xz",
 		"filename": "/tmp/compute_nim_prefetch_task",
 		"storage": true
+	},
+	"rust": {
+		"group": "compute",
+		"uri": "https://filebin.varnish-software.com/tinykvm_programs/rustpng.tar.xz",
+		"filename": "/tmp/compute_rust"
+	},
+	"shared_counter": {
+		"group": "compute",
+		"uri": "https://filebin.varnish-software.com/tinykvm_programs/shared_counter.tar.xz",
+		"filename": "/tmp/compute_shared_counter",
+		"shared_memory": 2
 	},
 	"stable_diffusion": {
 		"group": "compute",

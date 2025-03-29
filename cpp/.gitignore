@@ -3,4 +3,5 @@ minimal/minimal
 minimal/storage
 collector/collector
 collector/storage
+shared_counter/shared_counter
 *.syms
