@@ -9,6 +9,8 @@
 #include "include/v8-template.h"
 
 #include "../../kvm_api.h"
+#undef NDEBUG
+#include <cassert>
 
 static v8::Isolate* isolate;
 static v8::Isolate::CreateParams create_params;
@@ -16,8 +18,8 @@ static v8::Local<v8::Script> script;
 
 struct Response {
 	uint16_t status;
-	std::string_view content_type;
-	v8::String::Utf8Value content;
+	std::string content_type;
+	std::string content;
 };
 
 static Response invoke(const char *url, const char *arg)
@@ -30,18 +32,20 @@ static Response invoke(const char *url, const char *arg)
 	v8::Local<v8::Value> result;
 	if (!script->Run(context).ToLocal(&result))
 	{
+		v8::String::Utf8Value error(isolate, try_catch.Exception());
 		return Response {
 			503,
 			"text/plain",
-			v8::String::Utf8Value(isolate, try_catch.Exception()),
+			*error,
 		};
 	}
 
 	// Convert the content to an UTF8 string, for now.
+	v8::String::Utf8Value utf8(isolate, result);
 	return Response {
 		200,
 		"text/plain",
-		v8::String::Utf8Value(isolate, result),
+		*utf8,
 	};
 }
 
@@ -51,8 +55,8 @@ on_get(const char *url, const char *arg)
 	const auto resp = invoke(url, arg);
 
 	backend_response(resp.status,
-		resp.content_type.begin(), resp.content_type.size(),
-		*resp.content, resp.content.length());
+		resp.content_type.data(), resp.content_type.size(),
+		resp.content.c_str(), resp.content.length());
 }
 
 static int local_test()
@@ -189,14 +193,17 @@ int main(int argc, char* argv[])
 
 		if constexpr (true)
 		{
-			// Wait for requests
-			struct backend_request req;
-			wait_for_requests_paused(&req);
+			while (true) {
+				// Wait for requests
+				struct backend_request req;
+				wait_for_requests_paused(&req);
 
-			const auto resp = invoke(req.url, req.arg);
-			backend_response(resp.status,
-				resp.content_type.begin(), resp.content_type.size(),
-				*resp.content, resp.content.length());
+				// Invoke the script and produce a response
+				const auto resp = invoke("", "");
+				backend_response(resp.status,
+					resp.content_type.data(), resp.content_type.size(),
+					resp.content.c_str(), resp.content.length());
+			}
 		} else {
 			set_backend_get(on_get);
 			wait_for_requests();

@@ -179,8 +179,9 @@
 		"group": "compute",
 		"uri": "https://filebin.varnish-software.com/tinykvm_programs/computeV8.tar.xz",
 		"filename": "/tmp/compute_v8",
+		"concurrency": 4,
 		"address_space": 1024,
-		"max_memory": 80,
+		"max_memory": 256,
 		"max_boot_time": 32.0,
 		"ephemeral": false,
 		"executable_heap": true
