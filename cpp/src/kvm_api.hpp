@@ -1,4 +1,5 @@
 #include "kvm_api.h"
+#include <array>
 #include <cstring>
 #include <memory>
 #include <stdexcept>
@@ -8,17 +9,38 @@
 
 struct Backend
 {
-    static void response(uint16_t status, const std::string_view &ct, const std::string_view &cont)
+    static void response(uint16_t status, std::string_view ct, const void *cont, size_t cont_len)
+    {
+        backend_response(status, ct.begin(), ct.size(), cont, cont_len);
+    }
+    static void response(uint16_t status, std::string_view ct, const void *cont, size_t cont_len,
+		const std::vector<std::string> &headers, float ttl = 0.0f, float grace = 0.0f, float keep = 0.0f)
+    {
+		std::array<ResponseHeader, 64> header_array;
+		size_t i = 0;
+		for (const auto& header : headers) {
+			header_array.at(i).field = header.data();
+			header_array.at(i).field_len = header.size();
+			i++;
+		}
+		BackendResponseExtra extra = {};
+		extra.headers = header_array.data();
+		extra.num_headers = i;
+		extra.cached = ttl > 0.0f;
+		extra.ttl = ttl;
+		extra.grace = grace;
+		extra.keep = keep;
+        backend_response_extra(status, ct.begin(), ct.size(), cont, cont_len, &extra);
+    }
+
+    static void response(uint16_t status, std::string_view ct, std::string_view cont)
     {
         backend_response(status, ct.begin(), ct.size(), cont.begin(), cont.size());
     }
-    static void response(uint16_t status, const std::string_view &ct, const void *cont, size_t cont_len)
+    static void response(uint16_t status, std::string_view ct, std::string_view cont,
+		const std::vector<std::string> &headers, float ttl = 0.0f, float grace = 0.0f, float keep = 0.0f)
     {
-        backend_response(status, ct.begin(), ct.size(), cont, cont_len);
-    }
-    static void response(uint16_t status, const std::string_view &ct, const uint8_t *cont, size_t cont_len)
-    {
-        backend_response(status, ct.begin(), ct.size(), cont, cont_len);
+        response(status, ct, cont.begin(), cont.size(), headers, ttl, grace, keep);
     }
 };
 

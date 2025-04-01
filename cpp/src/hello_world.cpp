@@ -6,8 +6,6 @@
 static void
 on_get(const char *, const char *)
 {
-	Http::append(RESP, "X-Hello: World");
-
 	/* POST to httpbin.org */
 	const auto res =
 		Curl::post("http://httpbin.org/post", "text/test", "Data here");
@@ -16,7 +14,8 @@ on_get(const char *, const char *)
 	set_cacheable(res.status == 200, 10.0f, 0.0f, 0.0f);
 
 	/* Respond with the httpbin.org content. */
-	Backend::response(res.status, res.content_type, res.content);
+	Backend::response(res.status, res.content_type, res.content,
+		{ "X-Header: Hello World", "X-Hello: World" });
 }
 
 template <typename... Args>
