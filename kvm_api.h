@@ -115,13 +115,43 @@ extern void wait_for_requests_paused(struct backend_request* req);
  *  	backend_response(200, ctype, strlen(ctype), cont, strlen(cont));
  *  }
  **/
+struct ResponseHeader {
+	const char *field;
+	size_t      field_len;
+};
+struct BackendResponseExtra {
+	const struct ResponseHeader *headers;
+	uint16_t num_headers;
+	bool cached;
+	float ttl;
+	float grace;
+	float keep;
+	uint64_t reserved[4]; /* Reserved for future use. */
+};
 extern void __attribute__((used))
-backend_response(int16_t status, const void *t, size_t, const void *c, size_t);
+sys_backend_response(int16_t status, const void *t, size_t, const void *c, size_t,
+	const struct BackendResponseExtra *extra);
+
+static inline void
+backend_response(int16_t status, const void *t, size_t tlen, const void *c, size_t clen) {
+	sys_backend_response(status, t, tlen, c, clen, NULL);
+}
 
 static inline void
 backend_response_str(int16_t status, const char *ctype, const char *content)
 {
-	backend_response(status, ctype, __builtin_strlen(ctype), content, __builtin_strlen(content));
+	sys_backend_response(status, ctype, __builtin_strlen(ctype), content, __builtin_strlen(content), NULL);
+}
+
+/**
+ * @brief Create a response that includes HTTP headers, a status code, a body and
+ * a content type. The response is sent back to the client (or cached in Varnish).
+ */
+static inline void
+backend_response_extra(int16_t status, const void *t, size_t tlen, const void *c, size_t clen,
+	const struct BackendResponseExtra *extra)
+{
+	sys_backend_response(status, t, tlen, c, clen, extra);
 }
 
 /**
@@ -150,8 +180,8 @@ static const int REQ      = 0;
 static const int RESP     = 1;
 static const int REQUEST  = REQ;
 static const int RESPONSE = RESP;
-static const int BEREQ    = 4;
-static const int BERESP   = 5;
+static const int BEREQ    = 0;
+static const int BERESP   = 1;
 static const unsigned HTTP_FMT_SIZE = 4096; /* Most header fields fit. */
 
 extern long
@@ -782,9 +812,9 @@ asm(".global sys_set_cacheable\n"
 	"	out %eax, $0\n"
 	"	ret\n");
 
-asm(".global backend_response\n"
-	".type backend_response, @function\n"
-	"backend_response:\n"
+asm(".global sys_backend_response\n"
+	".type sys_backend_response, @function\n"
+	"sys_backend_response:\n"
 	".cfi_startproc\n"
 	"	mov $0x10010, %eax\n"
 	"	out %eax, $0\n"

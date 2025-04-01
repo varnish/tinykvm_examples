@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"os"
 	"strings"
 
 	"varnish"
@@ -52,6 +53,6 @@ func main() {
 
 	varnish.StorageRegister("my_storage", my_storage)
 
-	fmt.Println("Go Compute Example ready")
+	fmt.Println("Go Compute Example ready (", os.Args[2], ")")
 	varnish.WaitForRequests()
 }

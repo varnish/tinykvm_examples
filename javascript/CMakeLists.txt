@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.0.2)
+cmake_minimum_required (VERSION 3.5)
 project (qjs_app C)
 
 set(JSFILE "src/my.js" CACHE STRING "JavaScript source file")

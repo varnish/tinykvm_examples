@@ -5,7 +5,7 @@
 extern void go_backend_response(int16_t status,
     const char *ctype, size_t ctlen, const uint8_t *data, size_t datalen)
 {
-    backend_response(status, ctype, ctlen, data, datalen);
+    sys_backend_response(status, ctype, ctlen, data, datalen, NULL);
 }
 
 extern long go_set_cacheable(bool cached, float ttl, float grace, float keep)
@@ -60,6 +60,13 @@ asm(".global wait_for_requests\n"
 	"	mov $0x10001, %eax\n"
 	"	out %eax, $0\n");
 
+asm(".global wait_for_requests_paused\n"
+	".type wait_for_requests_paused, @function\n"
+	"wait_for_requests_paused:\n"
+	"	mov $0x10002, %eax\n"
+	"	out %eax, $0\n"
+	"	ret\n");
+
 asm(".global sys_set_cacheable\n"
 	".type sys_set_cacheable, @function\n"
 	"sys_set_cacheable:\n"
@@ -67,12 +74,13 @@ asm(".global sys_set_cacheable\n"
 	"	out %eax, $0\n"
 	"	ret\n");
 
-asm(".global backend_response\n"
-	".type backend_response, @function\n"
-	"backend_response:\n"
+asm(".global sys_backend_response\n"
+	".type sys_backend_response, @function\n"
+	"sys_backend_response:\n"
 	".cfi_startproc\n"
 	"	mov $0x10010, %eax\n"
 	"	out %eax, $0\n"
+	"	ret\n"
 	".cfi_endproc\n");
 
 asm(".global begin_streaming_response\n"

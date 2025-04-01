@@ -5,10 +5,13 @@ use core::ffi::CStr;
 use core::ffi::c_char;
 
 /** HTTP **/
+#[allow(dead_code)]
 pub static REQ:  u8 = 0;
+#[allow(dead_code)]
 pub static RESP: u8 = 1;
 
 #[inline]
+#[allow(dead_code)]
 pub fn log(field: &str) -> i32
 {
 	let mut result = 0x7F000;
@@ -23,6 +26,7 @@ pub fn log(field: &str) -> i32
 }
 
 #[inline]
+#[allow(dead_code)]
 pub fn append(hp: u8, field: &str) -> i32
 {
 	let mut result = 0x10020;
@@ -38,6 +42,7 @@ pub fn append(hp: u8, field: &str) -> i32
 }
 
 #[inline]
+#[allow(dead_code)]
 pub fn set_cacheable(cached: bool, ttl: f32, grace: f32, keep: f32)
 {
 	unsafe {
@@ -52,6 +57,7 @@ pub fn set_cacheable(cached: bool, ttl: f32, grace: f32, keep: f32)
 }
 
 #[inline]
+#[allow(dead_code)]
 pub fn backend_response(status: u16, ctype: &str, data: &[u8])
 {
 	unsafe {
@@ -61,12 +67,46 @@ pub fn backend_response(status: u16, ctype: &str, data: &[u8])
 			in("rsi") ctype.as_ptr(),
 			in("rdx") ctype.len(),
 			in("rcx") data.as_ptr(),
-			in("r8")  data.len()
+			in("r8")  data.len(),
+			in("r9")  0 // Extra data
+		);
+	}
+}
+
+#[allow(dead_code)]
+pub struct ResponseHeader {
+	pub data: *const u8,
+	pub len: usize,
+}
+#[allow(dead_code)]
+pub struct ExtraResponseData {
+	pub headers: *const ResponseHeader,
+	pub num_headers: usize,
+	pub cached: bool,
+	pub ttl: f32,
+	pub grace: f32,
+	pub keep: f32,
+}
+
+#[inline]
+#[allow(dead_code)]
+pub fn backend_response_full(status: u16, ctype: &str, data: &[u8], extra: &ExtraResponseData)
+{
+	unsafe {
+		asm!("out 0x0, eax",
+			in("eax") 0x10010,
+			in("rdi") status,
+			in("rsi") ctype.as_ptr(),
+			in("rdx") ctype.len(),
+			in("rcx") data.as_ptr(),
+			in("r8")  data.len(),
+			in("r9")  extra as *const ExtraResponseData
 		);
 	}
 }
 
 #[inline]
+#[allow(dead_code)]
 pub fn backend_response_str(status: u16, ctype: &str, data: &str)
 {
 	backend_response(status, ctype, data.as_bytes());
@@ -135,6 +175,7 @@ pub fn set_backend_post(cb: PostHandler)
 }
 
 #[inline]
+#[allow(dead_code)]
 pub fn wait_for_requests() -> !
 {
 	unsafe {
@@ -159,6 +200,7 @@ struct backend_request {
 	size_t         content_len;
 };
 */
+#[allow(dead_code)]
 pub struct Request {
 	pub method: *const c_char,
 	pub url: *const c_char,
@@ -173,24 +215,30 @@ pub struct Request {
 }
 
 impl Request {
+	#[allow(dead_code)]
 	pub fn method(&self) -> &str {
 		unsafe { CStr::from_ptr(self.method).to_str().unwrap() }
 	}
+	#[allow(dead_code)]
 	pub fn url(&self) -> &str {
 		unsafe { CStr::from_ptr(self.url).to_str().unwrap() }
 	}
+	#[allow(dead_code)]
 	pub fn arg(&self) -> &str {
 		unsafe { CStr::from_ptr(self.arg).to_str().unwrap() }
 	}
+	#[allow(dead_code)]
 	pub fn content_type(&self) -> &str {
 		unsafe { CStr::from_ptr(self.content_type).to_str().unwrap() }
 	}
+	#[allow(dead_code)]
 	pub fn content(&self) -> &[u8] {
 		unsafe { std::slice::from_raw_parts(self.content, self.content_len) }
 	}
 }
 
 #[inline]
+#[allow(dead_code)]
 pub fn wait_for_requests_paused() -> Request
 {
 	unsafe {
@@ -206,6 +254,7 @@ pub fn wait_for_requests_paused() -> Request
 /** Debugging and introspection **/
 
 #[inline]
+#[allow(dead_code)]
 pub fn breakpoint()
 {
 	unsafe {

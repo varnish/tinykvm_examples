@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-pushd example
+pushd goexample
 go build
 popd
 

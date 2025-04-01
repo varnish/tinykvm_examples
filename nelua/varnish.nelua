@@ -14,7 +14,7 @@ global varnish.set: function(field: string)
 local function register_func(id: cint, func: function(cstring, cstring)): void <cimport>
 end
 
-local function backend_response(status: cint, ct: cstring, ctlen: cint, cont: cstring, contlen: cint): void <cimport>
+local function backend_response1(status: cint, ct: cstring, ctlen: cint, cont: cstring, contlen: cint): void <cimport>
 end
 
 local backend_get: function(string, string)
@@ -28,7 +28,7 @@ varnish.set_backend_get = function(func: function(string, string))
 end
 
 varnish.response = function(status: integer, content_type: string, content: string)
-    backend_response(status, content_type, #content_type, content, #content)
+    backend_response1(status, content_type, #content_type, content, #content)
 end
 
 local function sys_http_set(id: cint, f: cstring, l: cint): void <cimport>
