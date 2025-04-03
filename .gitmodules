@@ -49,3 +49,6 @@
 [submodule "v8/v8-cmake"]
 	path = v8/v8-cmake
 	url = git@github.com:bnoordhuis/v8-cmake.git
+[submodule "cpp/ext/libdeflate"]
+	path = cpp/ext/libdeflate
+	url = https://github.com/ebiggers/libdeflate.git

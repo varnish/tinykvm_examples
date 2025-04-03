@@ -14,9 +14,15 @@ function (create_program name)
 	target_link_libraries(${name} -static)
 endfunction()
 
+add_subdirectory(ext/libdeflate)
 add_subdirectory(simdjson)
 add_subdirectory(ext/json)
 add_subdirectory(ext/Turbo-Base64)
+
+create_program(deflate
+	src/deflate.cpp
+)
+target_link_libraries(deflate libdeflate_static nlohmann_json)
 
 create_program(espeak
 	src/espeak.cpp

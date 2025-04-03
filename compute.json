@@ -42,6 +42,17 @@
 		"concurrency": 4,
 		"ephemeral": false
 	},
+	"deflate": {
+		"group": "compute",
+		"uri": "https://filebin.varnish-software.com/tinykvm_programs/deflate.tar.xz",
+		"filename": "/tmp/compute_deflate",
+		"max_memory": 64,
+		"max_request_memory": 16,
+		"ephemeral": false,
+		"split_hugepages": false,
+		"hugepage_arena_size": 64,
+		"request_hugepage_arena_size": 32
+	},
 	"espeak": {
 		"group": "compute",
 		"uri": "https://filebin.varnish-software.com/tinykvm_programs/espeak.tar.xz",
