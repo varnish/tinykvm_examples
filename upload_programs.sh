@@ -25,6 +25,7 @@ pack_with_storage() {
 #exit 0
 
 upload compute.json
+upload_program c/zlib/.build/zlibng
 upload_program cpp/.build/deflate
 upload_program v8/.build/v8-cmake/computeV8
 upload_program go/goexample/goexample

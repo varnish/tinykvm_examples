@@ -52,3 +52,6 @@
 [submodule "cpp/ext/libdeflate"]
 	path = cpp/ext/libdeflate
 	url = https://github.com/ebiggers/libdeflate.git
+[submodule "c/zlib/zlib-ng"]
+	path = c/zlib/zlib-ng
+	url = https://github.com/zlib-ng/zlib-ng.git

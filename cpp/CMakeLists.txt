@@ -55,3 +55,8 @@ target_link_libraries(fetch nlohmann_json)
 create_program(to_string
 	src/to_string.cpp
 )
+
+create_program(payload
+	src/payload.cpp
+)
+target_link_libraries(payload nlohmann_json)

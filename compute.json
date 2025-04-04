@@ -86,11 +86,6 @@
 		"concurrency": 4,
 		"storage": true
 	},
-	"inflate": {
-		"group": "compute",
-		"uri": "https://filebin.varnish-software.com/tinykvm_programs/inflate",
-		"filename": "/tmp/compute_inflate"
-	},
 	"hello": {
 		"group": "compute",
 		"uri": "https://filebin.varnish-software.com/tinykvm_programs/hello_world.tar.xz",
@@ -146,6 +141,15 @@
 		"uri": "https://filebin.varnish-software.com/tinykvm_programs/prefetch_task.tar.xz",
 		"filename": "/tmp/compute_nim_prefetch_task",
 		"storage": true
+	},
+	"payload": {
+		"group": "compute",
+		//"uri": "https://filebin.varnish-software.com/tinykvm_programs/payload.tar.xz",
+		"uri": "file:///home/gonzo/github/kvm_demo/cpp/.build/payload",
+		"filename": "/tmp/compute_payload",
+		"max_memory": 128,
+		"max_request_memory": 80,
+		"ephemeral": false
 	},
 	"rust": {
 		"group": "compute",
@@ -224,6 +228,11 @@
 		"filename": "/tmp/compute_xml",
 		"max_memory": 64,
 		"max_request_memory": 16
+	},
+	"zlibng": {
+		"group": "compute",
+		"uri": "https://filebin.varnish-software.com/tinykvm_programs/zlibng.tar.xz",
+		"filename": "/tmp/compute_zlibng"
 	},
 	"zstd": {
 		"group": "compute",

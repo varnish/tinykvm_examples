@@ -9,11 +9,11 @@ set(SOURCES
 	zlib.c
 )
 
-add_executable(inflate ${SOURCES})
+add_executable(zlibng ${SOURCES})
 if (NATIVE)
-	target_compile_options(inflate PRIVATE -march=native -Ofast -fno-fast-math)
+	target_compile_options(zlibng PRIVATE -march=native -Ofast -fno-fast-math)
 endif()
 
-add_subdirectory(zlib-dougallj)
+add_subdirectory(zlib-ng)
 
-target_link_libraries(inflate -static zlib)
+target_link_libraries(zlibng -static zlib)
