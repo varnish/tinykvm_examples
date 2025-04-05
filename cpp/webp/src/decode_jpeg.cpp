@@ -1,8 +1,10 @@
 #include "helpers.hpp"
 #include <turbojpeg.h>
 #include <webp/encode.h>
+#include <vector>
 
 #define USE_RGB 1 /* In contrast to YUV planes */
+static std::vector<uint8_t> imageBuffer;
 
 void decode_jpeg(WebPPicture& picture, const uint8_t *inp, size_t inp_len)
 {
@@ -20,11 +22,12 @@ void decode_jpeg(WebPPicture& picture, const uint8_t *inp, size_t inp_len)
 	const int stride = 3 * W;
 
 	/* Create RGB image buffer */
-	uint8_t *rgb = (uint8_t*)malloc(stride * H);
+	imageBuffer.resize(stride * H);
 
 	if (tjDecompress(tj, (uint8_t *)inp, inp_len,
-		rgb, 0, 0, 0, 3, 0) < 0)
+		imageBuffer.data(), 0, 0, 0, 3, 0) < 0) {
 		bail("tjDecompress");
+	}
 
 	tjDestroy(tj);
 
@@ -32,7 +35,7 @@ void decode_jpeg(WebPPicture& picture, const uint8_t *inp, size_t inp_len)
 	picture.width  = W;
 	picture.height = H;
 
-	if (!WebPPictureImportRGB(&picture, rgb, stride))
+	if (!WebPPictureImportRGB(&picture, imageBuffer.data(), stride))
 		bail("WebPPictureImportRGB");
 #else
 	// Turbo JPEG - direct to YUV planes

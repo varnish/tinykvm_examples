@@ -8,6 +8,9 @@
 const uint8_t *original_img = NULL;
 size_t         original_img_size = 0;
 std::string    original_content_type;
+static nlohmann::json_abi_v3_11_2::json j;
+static WebPPicture picture;
+static std::vector<uint8_t> buffer;
 
 extern void decode_webp(WebPPicture&, const uint8_t *, size_t len);
 extern void decode_jpeg(WebPPicture&, const uint8_t *, size_t len);
@@ -18,7 +21,7 @@ void produce_image(const nlohmann::json& j,
 	std::string_view content_type,
 	const uint8_t *source_image, const size_t source_image_len)
 {
-	WebPPicture picture;
+	WebPPictureFree(&picture);
 	WebPPictureInit(&picture);
 
 	WebPConfig config;
@@ -95,7 +98,7 @@ void produce_image(const nlohmann::json& j,
 	}
 
 	/* Encode final WebP image */
-	std::vector<uint8_t> buffer;
+	buffer.clear();
 	picture.user_data = &buffer;
 	picture.writer =
 	[] (const uint8_t* data, size_t data_size, const auto* picture) -> int
@@ -130,9 +133,9 @@ void produce_image(const nlohmann::json& j,
 static void
 on_get(const char *url, const char *arg)
 {
-	const auto j = nlohmann::json::parse(arg, arg + strlen(arg), nullptr, true, true);
+	j = nlohmann::json::parse(arg, arg + strlen(arg), nullptr, true, true);
 
-	std::vector<std::string> headers;
+	static std::vector<std::string> headers;
 	if (j.contains("headers")) {
 		headers = j["headers"].get<std::vector<std::string>>();
 	}
@@ -142,6 +145,7 @@ on_get(const char *url, const char *arg)
 	options.dont_verify_host = true;
 
 	auto image = Curl::fetch(url, headers, &options);
+	headers.clear();
 
 	if (image.status == 200)
 	{
@@ -165,7 +169,7 @@ on_post(const char *url, const char *arg, const char *ctype, const uint8_t *src,
 	original_img_size = len;
 	original_content_type = ctype;
 
-	const auto j = nlohmann::json::parse(arg, arg + strlen(arg), nullptr, true, true);
+	j = nlohmann::json::parse(arg, arg + strlen(arg), nullptr, true, true);
 	produce_image<KVM>(j, ctype, src, len);
 }
 
