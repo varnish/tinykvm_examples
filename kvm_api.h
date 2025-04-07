@@ -307,99 +307,6 @@ static inline long set_cacheable(bool cached, float ttl, float grace, float keep
 }
 
 /**
- * Varnish ActiveDNS
- *
- **/
-enum adns_ipv_rule {
-	ADNS_IPV_NONE = 0,
-	ADNS_IPV_AUTO,
-	ADNS_IPV_IPV4,
-	ADNS_IPV_IPV6,
-	ADNS_IPV_ALL,
-};
-enum adns_ttl_rule {
-	ADNS_TTL_NONE = 0,
-	ADNS_TTL_FORCE,
-	ADNS_TTL_ABIDE,
-	ADNS_TTL_MORETHAN,
-	ADNS_TTL_LESSTHAN,
-};
-enum adns_port_rule {
-	ADNS_PORT_NONE = 0,
-	ADNS_PORT_ABIDE,
-	ADNS_PORT_FORCE,
-};
-enum adns_mode_rule {
-	ADNS_MODE_NONE = 0,
-	ADNS_MODE_AUTO,
-	ADNS_MODE_HOST,
-	ADNS_MODE_DNS,
-	ADNS_MODE_SRV,
-};
-enum adns_update_rule {
-	ADNS_UPDATE_NONE = 0,
-	ADNS_UPDATE_ALWAYS,
-	ADNS_UPDATE_IGNORE_EMPTY,
-	ADNS_UPDATE_IGNORE_ERROR,
-};
-enum adns_nsswitch_rule {
-	ADNS_NSSWITCH_NONE = 0,
-	ADNS_NSSWITCH_AUTO,
-	ADNS_NSSWITCH_DNS_ONLY,
-	ADNS_NSSWITCH_DNS_FIRST,
-	ADNS_NSSWITCH_FILES_ONLY,
-	ADNS_NSSWITCH_FILES_FIRST,
-};
-
-union adns_rules {
-	struct {
-		uint8_t ipv;
-		uint8_t ttl;
-		uint8_t port;
-		uint8_t mode;
-		uint8_t update;
-		uint8_t nsswitch;
-	} b;
-	uint64_t reg;
-};
-extern int sys_adns_new(uint32_t key);
-extern int sys_adns_free(int idx);
-extern int sys_adns_config(int idx, const char *host, const char *service, long ttl, uint64_t rules);
-struct adns {
-	uint8_t  ipv;
-	/* IPv4, IPv6 or Hostname. */
-	uint8_t  addrlen;
-	uint8_t  address[126];
-	int8_t   touched;
-	uint16_t priority;
-	uint16_t weight;
-#define ADNS_HASH_LEN   32u
-	uint8_t  hash[ADNS_HASH_LEN];
-};
-extern int sys_adns_get(int idx, int entry, const struct adns *, size_t);
-
-/* Create new configurable ADNS entry based on integral key. Returns tag index. */
-static inline
-int adns_new(uint32_t key) { return sys_adns_new(key); }
-
-/* Configure the ADNS index with hostname, service, TTL and rules. */
-static inline
-int adns_config(int idx, const char *host, const char *service, float ttl, const union adns_rules *rules) {
-	return sys_adns_config(idx, host, service, ttl * 1024, rules->reg);
-}
-
-/* Retrieve address and information about ADNS entry from index. Returns 0 on success.
-   If adns is NULL, it will return the number of addresses in the ADNS entry. */
-static inline
-int adns_get(int idx, int entry, const struct adns *adns) {
-	return sys_adns_get(idx, entry, adns, 1UL * sizeof(*adns));
-}
-static inline
-int adns_get_count(int idx, int entry) {
-	return sys_adns_get(idx, entry, NULL, 0u);
-}
-
-/**
  * Storage program
  *
  * Every tenant or program can have storage. If storage is enabled, then
@@ -742,24 +649,6 @@ extern long sys_fetch(const char*, size_t, struct curl_op*, struct curl_fields*,
 extern long sys_request(const char*, size_t, struct curl_op*, struct curl_fields*, struct curl_options*);
 
 /**
- * TCP-related functions
-**/
-
-/**
- * Receive and control a TCP socket file descriptor.
- * This fd can be read from and written to using write().
- * Reading happens automatically outside of the guest, and the read-buffer
- * is presented through the on_read callback.
- * 
- * Register various TCP socket callbacks:
- **/
-static inline void set_socket_on_connect(int(*f)(int fd, const char *remote, const char *arg)) { register_func(8, f); }
-static inline void set_socket_on_read(void(*f)(int fd, const uint8_t*, size_t)) { register_func(9, f); }
-static inline void set_socket_on_writable(void(*f)(int fd)) { register_func(10, f); }
-static inline void set_socket_on_disconnect(void(*f)(int fd, const char *reason)) { register_func(11, f); }
-
-
-/**
  * Utility functions
 **/
 
@@ -889,34 +778,6 @@ asm(".global sys_regex_copyto\n"
 	".type sys_regex_copyto, @function\n"
 	"sys_regex_copyto:\n"
 	"	mov $0x10035, %eax\n"
-	"	out %eax, $0\n"
-	"	ret\n");
-
-asm(".global sys_adns_new\n"
-	".type sys_adns_new, @function\n"
-	"sys_adns_new:\n"
-	"	mov $0x10200, %eax\n"
-	"	out %eax, $0\n"
-	"	ret\n");
-
-asm(".global sys_adns_free\n"
-	".type sys_adns_free, @function\n"
-	"sys_adns_free:\n"
-	"	mov $0x10201, %eax\n"
-	"	out %eax, $0\n"
-	"	ret\n");
-
-asm(".global sys_adns_config\n"
-	".type sys_adns_config, @function\n"
-	"sys_adns_config:\n"
-	"	mov $0x10202, %eax\n"
-	"	out %eax, $0\n"
-	"	ret\n");
-
-asm(".global sys_adns_get\n"
-	".type sys_adns_get, @function\n"
-	"sys_adns_get:\n"
-	"	mov $0x10203, %eax\n"
 	"	out %eax, $0\n"
 	"	ret\n");
 
