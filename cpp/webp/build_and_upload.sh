@@ -7,9 +7,9 @@ sed -i 's/libyuv.so/libyuv.a/g' build.ninja
 ninja
 popd
 
-file=".build/webpencode"
-tenant="test.com"
+file=".build/webpencoder"
+tenant="webp"
 key="123"
 host="127.0.0.1:8080"
 
-curl -H "X-LiveUpdate: $key" -H "Host: $tenant" --data-binary "@$file" -X POST $host
+curl -H "X-LiveUpdate: $key" -H "Host: $tenant" --data-binary "@$file" -X POST http://$host/update

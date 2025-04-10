@@ -26,9 +26,6 @@ void produce_image(const nlohmann::json& j,
 
 	WebPConfig config;
 	WebPConfigInit(&config);
-	config.quality  = 50.0f;
-	config.method   = 3; /* 1=Fastest, 6=Slowest */
-	config.filter_type  = 0;
 	config.thread_level = 0;
 
 	if (j.contains("quality")) {

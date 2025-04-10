@@ -24,8 +24,8 @@ void decode_jpeg(WebPPicture& picture, const uint8_t *inp, size_t inp_len)
 	/* Create RGB image buffer */
 	imageBuffer.resize(stride * H);
 
-	if (tjDecompress(tj, (uint8_t *)inp, inp_len,
-		imageBuffer.data(), 0, 0, 0, 3, 0) < 0) {
+	if (tjDecompress2(tj, (uint8_t *)inp, inp_len,
+		imageBuffer.data(), W, 0, H, TJPF_RGB, TJFLAG_FASTDCT) < 0) {
 		bail("tjDecompress");
 	}
 
@@ -62,10 +62,11 @@ void decode_jpeg(WebPPicture& picture, const uint8_t *inp, size_t inp_len)
 	int row_bytes[3] = {
 		picture.y_stride,
 		picture.uv_stride,
-		picture.uv_stride
+		picture.uv_stride,
 	};
-	if (tjDecompressToYUVPlanes(tj, inp, inp_len, yuv, W, row_bytes, H, 0) < 0)
+	if (tjDecompressToYUVPlanes(tj, inp, inp_len, yuv, W, row_bytes, H, TJFLAG_FASTDCT) < 0)
 		bail("tjDecompressToYUVPlanes");
 
+	tjDestroy(tj);
 #endif
 }
