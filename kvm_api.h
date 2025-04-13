@@ -673,6 +673,19 @@ extern long sys_fetch(const char*, size_t, struct curl_op*, struct curl_fields*,
 extern long sys_request(const char*, size_t, struct curl_op*, struct curl_fields*, struct curl_options*);
 
 /**
+ * TCP-related functions
+ * 
+ * Receive and control a TCP socket file descriptor.
+ * This fd can be read from and written to using write().
+ * Reading happens automatically outside of the guest, and the read-buffer
+ * is presented through the on_read callback.
+ **/
+static inline void set_socket_on_connect(int(*f)(int fd, const char *remote, const char *arg)) { register_func(8, f); }
+static inline void set_socket_on_read(void(*f)(int fd, const uint8_t*, size_t)) { register_func(9, f); }
+static inline void set_socket_on_writable(void(*f)(int fd)) { register_func(10, f); }
+static inline void set_socket_on_disconnect(void(*f)(int fd, const char *reason)) { register_func(11, f); }
+
+/**
  * Utility functions
 **/
 
