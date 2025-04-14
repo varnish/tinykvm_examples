@@ -679,11 +679,32 @@ extern long sys_request(const char*, size_t, struct curl_op*, struct curl_fields
  * This fd can be read from and written to using write().
  * Reading happens automatically outside of the guest, and the read-buffer
  * is presented through the on_read callback.
+ * 
+ * Callback-based socket API:
  **/
 static inline void set_socket_on_connect(int(*f)(int fd, const char *remote, const char *arg)) { register_func(8, f); }
 static inline void set_socket_on_read(void(*f)(int fd, const uint8_t*, size_t)) { register_func(9, f); }
 static inline void set_socket_on_writable(void(*f)(int fd)) { register_func(10, f); }
 static inline void set_socket_on_disconnect(void(*f)(int fd, const char *reason)) { register_func(11, f); }
+/**
+ * Pause-and-resume socket API:
+*/
+static inline void set_socket_prepare_for_pause(void(*f)(int)) { register_func(12, f); }
+enum SocketEvent {
+	SOCKET_CONNECT = 0,
+	SOCKET_READ,
+	SOCKET_WRITABLE,
+	SOCKET_DISCONNECT,
+};
+struct kvm_socket_event {
+	int fd;
+	enum SocketEvent event;
+	const char *remote;
+	const char *arg;
+	const uint8_t *data;
+	size_t data_len;
+};
+extern void wait_for_socket_event_paused(struct kvm_socket_event* se);
 
 /**
  * Utility functions
@@ -727,6 +748,13 @@ asm(".global wait_for_requests\n"
 asm(".global wait_for_requests_paused\n"
 	".type wait_for_requests_paused, @function\n"
 	"wait_for_requests_paused:\n"
+	"	mov $0x10002, %eax\n"
+	"	out %eax, $0\n"
+	"	ret\n");
+
+asm(".global wait_for_socket_event_paused\n"
+	".type wait_for_socket_event_paused, @function\n"
+	"wait_for_socket_event_paused:\n"
 	"	mov $0x10002, %eax\n"
 	"	out %eax, $0\n"
 	"	ret\n");

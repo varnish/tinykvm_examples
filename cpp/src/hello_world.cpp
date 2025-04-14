@@ -63,11 +63,39 @@ on_disconnect(int fd, const char *reason)
 	Print("* FD %d disconnected: %s\n", fd, reason);
 }
 
+static void
+on_socket_prepare(int thread)
+{
+	while (true) {
+		struct kvm_socket_event se = {};
+		wait_for_socket_event_paused(&se);
+		switch (se.event) {
+		case SOCKET_CONNECT:
+			//Print("Socket %d connected: %s\n", se.fd, se.remote);
+			break;
+		case SOCKET_READ:
+			//Print("Socket %d read: %zu bytes\n", se.fd, se.data_len);
+			break;
+		case SOCKET_WRITABLE:
+			//Print("Socket %d writable\n", se.fd);
+			/* Write to the socket. */
+			write(se.fd, response, sizeof(response)-1);
+			break;
+		case SOCKET_DISCONNECT:
+			//Print("Socket %d disconnected: %s\n", se.fd, se.remote);
+			break;
+		}
+		/* Resume the socket event. */
+	}
+}
+
 int main(int argc, char **argv)
 {
 	Print("Hello Compute %s World!\n", argv[2]);
 
 	set_backend_get(on_get);
+
+	set_socket_prepare_for_pause(on_socket_prepare);
 	set_socket_on_connect(on_connected);
 	set_socket_on_read(on_read);
 	//set_socket_on_writable(on_writable);
