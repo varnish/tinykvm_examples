@@ -675,18 +675,12 @@ extern long sys_request(const char*, size_t, struct curl_op*, struct curl_fields
 /**
  * TCP-related functions
  * 
- * Receive and control a TCP socket file descriptor.
- * This fd can be read from and written to using write().
+ * Receive and control TCP socket file descriptors.
+ * fds can be read from and written to using write().
  * Reading happens automatically outside of the guest, and the read-buffer
- * is presented through the on_read callback.
+ * is pre-allocated and then used in the event struct. You will see the same
+ * buffers again and again, so you cannot keep them around.
  * 
- * Callback-based socket API:
- **/
-static inline void set_socket_on_connect(int(*f)(int fd, const char *remote, const char *arg)) { register_func(8, f); }
-static inline void set_socket_on_read(void(*f)(int fd, const uint8_t*, size_t)) { register_func(9, f); }
-static inline void set_socket_on_writable(void(*f)(int fd)) { register_func(10, f); }
-static inline void set_socket_on_disconnect(void(*f)(int fd, const char *reason)) { register_func(11, f); }
-/**
  * Pause-and-resume socket API:
 */
 static inline void set_socket_prepare_for_pause(void(*f)(int)) { register_func(12, f); }
@@ -708,6 +702,7 @@ extern int wait_for_socket_events_paused(struct kvm_socket_event* events, size_t
 static inline void wait_for_socket_event_paused(struct kvm_socket_event* se) {
 	wait_for_socket_events_paused(se, 1);
 }
+extern long sys_sockets_write(const struct kvm_socket_event* se, size_t n);
 
 /**
  * Utility functions
@@ -848,6 +843,13 @@ asm(".global sys_regex_copyto\n"
 	"	mov $0x10035, %eax\n"
 	"	out %eax, $0\n"
 	"	ret\n");
+
+asm(".global sys_sockets_write\n"
+	".type sys_sockets_write, @function\n"
+	"sys_sockets_write:\n"
+	"	mov $0x10500, %eax\n"
+	"	out %eax, $0\n"
+	"   ret\n");
 
 asm(".global shared_memory_area\n"
 	".type shared_memory_area, @function\n"

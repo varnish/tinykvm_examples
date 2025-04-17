@@ -32,40 +32,10 @@ static const char response[] =
 	"\r\n"
 	"Hello World!\n";
 
-static int
-on_connected(int fd, const char *remote, const char *argument)
-{
-	Print("* FD %d connected. Remote: %s Arg: %s\n",
-		fd, remote, argument);
-
-	write(fd, response, sizeof(response)-1);
-	return 1;
-}
-static void
-on_read(int fd, const uint8_t *data, size_t bytes)
-{
-	//Print("* FD %d data: %p, %zu bytes\n", fd, data, bytes);
-
-	/* Assume request */
-	write(fd, response, sizeof(response)-1);
-}
-/*static void
-on_writable(int fd)
-{
-	Print("* FD %d writable (again)\n", fd);
-
-	write(fd, "Last bit\n", 9);
-	shutdown(fd, SHUT_RDWR);
-}*/
-static void
-on_disconnect(int fd, const char *reason)
-{
-	Print("* FD %d disconnected: %s\n", fd, reason);
-}
-
 static void
 on_socket_prepare(int thread)
 {
+	std::vector<kvm_socket_event> write_events;
 	while (true) {
 		std::array<kvm_socket_event, 8> events;
 		int cnt = wait_for_socket_events_paused(events.data(), events.size());
@@ -81,12 +51,24 @@ on_socket_prepare(int thread)
 			case SOCKET_WRITABLE:
 				//Print("Socket %d writable\n", se.fd);
 				/* Write to the socket. */
-				write(se.fd, response, sizeof(response)-1);
+				write_events.push_back({
+					.fd = se.fd,
+					.event = SOCKET_WRITABLE,
+					.remote = nullptr,
+					.arg = nullptr,
+					.data = (const uint8_t *)response,
+					.data_len = sizeof(response) - 1
+				});
 				break;
 			case SOCKET_DISCONNECT:
 				//Print("Socket %d disconnected: %s\n", se.fd, se.remote);
 				break;
 			}
+		}
+		if (!write_events.empty()) {
+			/* Write to the socket. */
+			sys_sockets_write(write_events.data(), write_events.size());
+			write_events.clear();
 		}
 		/* Continue waiting for events. */
 	}
@@ -99,9 +81,5 @@ int main(int argc, char **argv)
 	set_backend_get(on_get);
 
 	set_socket_prepare_for_pause(on_socket_prepare);
-	set_socket_on_connect(on_connected);
-	set_socket_on_read(on_read);
-	//set_socket_on_writable(on_writable);
-	set_socket_on_disconnect(on_disconnect);
 	wait_for_requests();
 }
