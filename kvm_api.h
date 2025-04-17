@@ -702,7 +702,7 @@ extern int wait_for_socket_events_paused(struct kvm_socket_event* events, size_t
 static inline void wait_for_socket_event_paused(struct kvm_socket_event* se) {
 	wait_for_socket_events_paused(se, 1);
 }
-extern long sys_sockets_write(const struct kvm_socket_event* se, size_t n);
+extern void sys_sockets_write(struct kvm_socket_event* se, size_t n);
 
 /**
  * Utility functions

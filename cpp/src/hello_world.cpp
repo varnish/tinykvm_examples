@@ -37,7 +37,7 @@ on_socket_prepare(int thread)
 {
 	std::vector<kvm_socket_event> write_events;
 	while (true) {
-		std::array<kvm_socket_event, 8> events;
+		std::array<kvm_socket_event, 16> events;
 		int cnt = wait_for_socket_events_paused(events.data(), events.size());
 		for (int i = 0; i < cnt; ++i) {
 			auto& se = events[i];
