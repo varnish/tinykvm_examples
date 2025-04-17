@@ -704,7 +704,10 @@ struct kvm_socket_event {
 	const uint8_t *data;
 	size_t data_len;
 };
-extern void wait_for_socket_event_paused(struct kvm_socket_event* se);
+extern int wait_for_socket_events_paused(struct kvm_socket_event* events, size_t n);
+static inline void wait_for_socket_event_paused(struct kvm_socket_event* se) {
+	wait_for_socket_events_paused(se, 1);
+}
 
 /**
  * Utility functions
@@ -752,9 +755,9 @@ asm(".global wait_for_requests_paused\n"
 	"	out %eax, $0\n"
 	"	ret\n");
 
-asm(".global wait_for_socket_event_paused\n"
-	".type wait_for_socket_event_paused, @function\n"
-	"wait_for_socket_event_paused:\n"
+asm(".global wait_for_socket_events_paused\n"
+	".type wait_for_socket_events_paused, @function\n"
+	"wait_for_socket_events_paused:\n"
 	"	mov $0x10002, %eax\n"
 	"	out %eax, $0\n"
 	"	ret\n");

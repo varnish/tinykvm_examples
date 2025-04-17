@@ -67,25 +67,28 @@ static void
 on_socket_prepare(int thread)
 {
 	while (true) {
-		struct kvm_socket_event se = {};
-		wait_for_socket_event_paused(&se);
-		switch (se.event) {
-		case SOCKET_CONNECT:
-			//Print("Socket %d connected: %s\n", se.fd, se.remote);
-			break;
-		case SOCKET_READ:
-			//Print("Socket %d read: %zu bytes\n", se.fd, se.data_len);
-			break;
-		case SOCKET_WRITABLE:
-			//Print("Socket %d writable\n", se.fd);
-			/* Write to the socket. */
-			write(se.fd, response, sizeof(response)-1);
-			break;
-		case SOCKET_DISCONNECT:
-			//Print("Socket %d disconnected: %s\n", se.fd, se.remote);
-			break;
+		std::array<kvm_socket_event, 8> events;
+		int cnt = wait_for_socket_events_paused(events.data(), events.size());
+		for (int i = 0; i < cnt; ++i) {
+			auto& se = events[i];
+			switch (se.event) {
+			case SOCKET_CONNECT:
+				//Print("Socket %d connected: %s\n", se.fd, se.remote);
+				break;
+			case SOCKET_READ:
+				//Print("Socket %d read: %zu bytes\n", se.fd, se.data_len);
+				break;
+			case SOCKET_WRITABLE:
+				//Print("Socket %d writable\n", se.fd);
+				/* Write to the socket. */
+				write(se.fd, response, sizeof(response)-1);
+				break;
+			case SOCKET_DISCONNECT:
+				//Print("Socket %d disconnected: %s\n", se.fd, se.remote);
+				break;
+			}
 		}
-		/* Resume the socket event. */
+		/* Continue waiting for events. */
 	}
 }
 
