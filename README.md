@@ -50,6 +50,7 @@ There are several examples in the documentation, as well how to use the VMOD fro
 - Nelua: Go into the [nelua folder](nelua) and edit [example.nelua](nelua/example.nelua)
 - Nim: Go into the [nim folder](nim) and edit [hello.nim](nim/hello.nim)
 - JavaScript: Go into the [javascript folder](javascript) and edit [chat.js](javascript/src/chat.js)
+- Python: Go into the [python folder](python) and edit [program.py](python/program.py)
 - Rust: Go into the [rust folder](rust) and edit [main.rs](rust/static/src/main.rs)
 - Zig: Go into the [zig folder](zig) and edit [example.zig](zig/example.zig)
 
