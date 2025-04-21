@@ -183,6 +183,57 @@ print('Hello Python Compute World')
 	printf("*** Python code ***\n%s*** End of Python code ***\n", python_file_string);
 	fflush(stdout);
 
-	PyRun_SimpleString(python_file_string);
-    Py_Finalize();
+	// Precompile the string as Python code object
+	// We want to use optimization level 2
+	PyObject* pCode = Py_CompileStringExFlags(python_file_string, argv[3], Py_file_input, NULL, 2);
+	if (pCode == NULL) {
+		PyErr_Print();
+		free(python_file_string);
+		Py_Finalize();
+		return 1;
+	}
+	// Execute the code object
+	PyObject* pModule = PyImport_ExecCodeModule("varnish", pCode);
+	if (pModule == NULL) {
+		PyErr_Print();
+		Py_XDECREF(pCode);
+		free(python_file_string);
+		Py_Finalize();
+		return 1;
+	}
+	// Clean up
+	Py_XDECREF(pCode);
+	free(python_file_string);
+	// Call the main function in the module
+	PyObject* pFunc = PyObject_GetAttrString(pModule, "main");
+	if (pFunc == NULL) {
+		PyErr_Print();
+		Py_XDECREF(pModule);
+		Py_Finalize();
+		return 1;
+	}
+	// Pass argv arguments to the main function
+	PyObject* pArgs = PyTuple_Pack(3, argv[1], argv[2], argv[3]);
+	if (pArgs == NULL) {
+		PyErr_Print();
+		Py_XDECREF(pFunc);
+		Py_XDECREF(pModule);
+		Py_Finalize();
+		return 1;
+	}
+	PyObject* pValue = PyObject_CallObject(pFunc, pArgs);
+	if (pValue == NULL) {
+		PyErr_Print();
+		Py_XDECREF(pArgs);
+		Py_XDECREF(pFunc);
+		Py_XDECREF(pModule);
+		Py_Finalize();
+		return 1;
+	}
+	Py_XDECREF(pValue);
+	Py_XDECREF(pArgs);
+	Py_XDECREF(pFunc);
+	Py_XDECREF(pModule);
+	// Finalize the Python interpreter
+	Py_Finalize();
 }

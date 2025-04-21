@@ -5,5 +5,7 @@ while True:
 	#print(req)
 	varnish.http_set('X-Compute-Request-ID: 123456')
 	agent = varnish.http_get('User-Agent')
-	varnish.http_set('X-Compute-User-Agent: ' + agent)
+	if agent:
+		agent = agent.partition(': ')[-1]
+		varnish.http_set('X-Compute-User-Agent: ' + agent)
 	varnish.backend_response_str(200, 'text/plain', 'Hello Python Compute World')
