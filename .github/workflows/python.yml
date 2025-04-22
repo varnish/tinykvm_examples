@@ -1,0 +1,25 @@
+name: Build Python programs
+
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo DEBIAN_FRONTEND=noninteractive apt -y install build-essential clang \
+            cmake uuid-dev zlib1g-dev libssl-dev \
+            libsqlite3-dev libreadline-dev libncurses5-dev libbz2-dev \
+            libffi-dev liblzma-dev libgdbm-dev libgdbm-compat-dev \
+            libexpat1-dev libxml2-dev libxslt1-dev
+          git submodule update --init --recursive python
+
+      - name: Build the Python example program
+        run: |
+          cd python
+          ./build.sh

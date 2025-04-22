@@ -55,3 +55,6 @@
 [submodule "c/zlib/zlib-ng"]
 	path = c/zlib/zlib-ng
 	url = https://github.com/zlib-ng/zlib-ng.git
+[submodule "python/portable-python-cmake-buildsystem"]
+	path = python/portable-python-cmake-buildsystem
+	url = https://github.com/bjia56/portable-python-cmake-buildsystem.git
