@@ -4,7 +4,7 @@ Python is well supported in TinyKVM.
 
 # Build settings
 
-Python can be built statically using the magnificent [python-cmake-buildsystem](https://github.com/python-cmake-buildsystem/python-cmake-buildsystem). Build it somewhere on your machine, and point to it from this folders [build.sh](build.sh).
+Python can be built statically using the magnificent [python-cmake-buildsystem](https://github.com/bjia56/portable-python-cmake-buildsystem). Build it somewhere on your machine, and point to it from this folders [build.sh](build.sh).
 
 # Run-time settings
 
@@ -17,13 +17,13 @@ Once you have the static Python executable, you will need a customized compute.j
 		"/home/gonzo/github/kvm_demo/python/program.py"
 	],
 	"allowed_paths": [
-		"$/home/gonzo/github/python-cmake-buildsystem/.build/lib/python3.9",
+		"$/home/gonzo/github/python-cmake-buildsystem/.build/lib/python3.13",
 		"/home/gonzo/github/kvm_demo/python/program.py",
 		"/"
 	],
 	"environment": [
 		"PYTHONHOME=/home/gonzo/github/kvm_demo/python",
-		"PYTHONPATH=/home/gonzo/github/python-cmake-buildsystem/.build/lib/python3.9"
+		"PYTHONPATH=/home/gonzo/github/python-cmake-buildsystem/.build/lib/python3.13"
 	]
 }
 ```

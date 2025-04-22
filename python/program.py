@@ -1,9 +1,11 @@
 import varnish
+import uuid
 
 while True:
 	req = varnish.wait_for_requests()
 	#print(req)
-	varnish.http_set('X-Compute-Request-ID: 123456')
+	req_uuid = str(uuid.uuid4())
+	varnish.http_set('X-Compute-Request-ID: ' + req_uuid)
 	agent = varnish.http_get('User-Agent')
 	if agent:
 		agent = agent.partition(': ')[-1]

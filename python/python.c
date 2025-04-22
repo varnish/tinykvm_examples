@@ -114,7 +114,7 @@ static struct PyModuleDef varnish_module = {
 	"varnish",  // name of module
 	NULL,       // module documentation, may be NULL
 	-1,         // size of per-interpreter state of the module,
-	            // or -1 if the module keeps state in global variables.
+				// or -1 if the module keeps state in global variables.
 	VarnishMethods
 };
 PyMODINIT_FUNC PyInit_varnish(void) {
@@ -129,19 +129,34 @@ int main(int argc, char** argv)
 {
 	// Initialize the Python interpreter
 	PyImport_AppendInittab("varnish", PyInit_varnish);
-	Py_SetProgramName(argv[0]);
-	Py_Initialize();
+	wchar_t *program = Py_DecodeLocale(argv[0], NULL);
+	PyConfig config;
+	PyConfig_InitPythonConfig(&config);
+
+	PyStatus status = PyConfig_SetString(&config, &config.program_name, program);
+	if (PyStatus_Exception(status)) {
+		fprintf(stderr, "PyConfig_SetString failed\n");
+		PyMem_RawFree(program);
+		return 1;
+	}
+
+	status = Py_InitializeFromConfig(&config);
+	if (PyStatus_Exception(status)) {
+		fprintf(stderr, "Py_InitializeFromConfig failed\n");
+		PyMem_RawFree(program);
+		return 1;
+	}
 	PyImport_ImportModule("varnish");
 
 	printf("Python version: %s\n", Py_GetVersion());
-    PyRun_SimpleString(R"(
+	PyRun_SimpleString(R"(
 print('Hello Python Compute World')
 	)");
 
-    if (IS_LINUX_MAIN()) {
-        Py_Finalize();
-        return 0;
-    }
+	if (IS_LINUX_MAIN()) {
+		Py_Finalize();
+		return 0;
+	}
 
 	// Open the main Python file
 	FILE *fp = fopen(argv[3], "r");
