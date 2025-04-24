@@ -1,5 +1,6 @@
 import varnish
 import uuid
+import gzip
 
 while True:
 	req = varnish.wait_for_requests()
@@ -10,4 +11,9 @@ while True:
 	if agent:
 		agent = agent.partition(': ')[-1]
 		varnish.http_set('X-Compute-User-Agent: ' + agent)
-	varnish.backend_response_str(200, 'text/plain', 'Hello Python Compute World')
+
+	data = b'Hello Python Compute World'
+	compressed_data = gzip.compress(data)
+	varnish.http_set("Content-Encoding: gzip")
+
+	varnish.backend_response(200, 'text/plain', compressed_data)

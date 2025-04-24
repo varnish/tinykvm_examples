@@ -49,7 +49,7 @@ extern void register_func(int, ...);
  * Detecting KVM from main(). Note that we could check CPUID, but we prefer
  * a simple check for / in argv[0].
 **/
-#define IS_SANDBOXED_MAIN()  (__builtin_strchr(argv[0], '/') == (void*)0)
+#define IS_SANDBOXED_MAIN()  (getenv("KVM_NAME") != (void*)0)
 #define IS_LINUX_MAIN()      !IS_SANDBOXED_MAIN()
 
 /**
