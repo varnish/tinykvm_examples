@@ -51,7 +51,7 @@ extern void register_func(int, ...);
 **/
 #define IS_SANDBOXED_MAIN()  (getenv("KVM_NAME") != (void*)0)
 #define IS_LINUX_MAIN()      !IS_SANDBOXED_MAIN()
-
+#define IS_STORAGE()         (strcmp(getenv("KVM_TYPE"), "storage") == 0)
 /**
  * During the start of the program, one should register callback functions
  * that will handle different types of requests, like GET, POST etc.

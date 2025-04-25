@@ -296,7 +296,7 @@ int main(int argc, char** argv)
 {
 	(void)argc;
 
-	if (strcmp(argv[2], "storage") == 0)
+	if (IS_STORAGE())
 	{
 		/* GameBoy Color machine */
 		machine = new gbc::Machine(romdata);
