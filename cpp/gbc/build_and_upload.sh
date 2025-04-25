@@ -7,8 +7,9 @@ ninja
 popd
 
 file=".build/gbcemu"
-tenant="gameboy.com"
-key="12daf155b8508edc4a4b8002264d7494"
-host="https://sandbox.varnish-software.com"
+tenant="gbc"
+key="123"
+host="http://127.0.0.1:8080/update"
 
-curl -H "X-PostKey: $key" -H "Host: $tenant" --data-binary "@$file" -X POST $host
+set -x
+curl -D - -H "X-LiveUpdate: $key" -H "Host: $tenant" --data-binary "@$file" -X POST $host

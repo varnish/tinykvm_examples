@@ -4,8 +4,7 @@
 		"max_boot_time": 8.0,
 		"max_request_time": 6.0,
 		"max_memory": 64,
-		"max_request_memory": 48,
-		"req_mem_limit_after_reset": 16 /* Mbytes */
+		"max_request_memory": 48
 	},
 	"avif": {
 		"group": "compute",
@@ -47,7 +46,7 @@
 		"uri": "https://filebin.varnish-software.com/tinykvm_programs/deflate.tar.xz",
 		"filename": "/tmp/compute_deflate",
 		"max_memory": 64,
-		"max_request_memory": 16,
+		"max_request_memory": 32,
 		"ephemeral": false,
 		"split_hugepages": false,
 		"hugepage_arena_size": 64,
@@ -72,6 +71,7 @@
 		"group": "compute",
 		"uri": "https://filebin.varnish-software.com/tinykvm_programs/gbcemu.tar.xz",
 		"filename": "/tmp/compute_gbcemu",
+		"key": "123",
 		"max_memory": 128,
 		"max_request_memory": 64,
 		"concurrency": 4,
@@ -91,7 +91,11 @@
 		"uri": "https://filebin.varnish-software.com/tinykvm_programs/hello_world.tar.xz",
 		"filename": "/tmp/compute_hello_world",
 		"concurrency": 2,
-		"storage": true
+		"storage": true,
+		"server": {
+			"port": 8081,
+			"systems": 64
+		}
 	},
 	"jsapp": {
 		"group": "compute",
@@ -144,8 +148,7 @@
 	},
 	"payload": {
 		"group": "compute",
-		//"uri": "https://filebin.varnish-software.com/tinykvm_programs/payload.tar.xz",
-		"uri": "file:///home/gonzo/github/kvm_demo/cpp/.build/payload",
+		"uri": "https://filebin.varnish-software.com/tinykvm_programs/payload.tar.xz",
 		"filename": "/tmp/compute_payload",
 		"max_memory": 128,
 		"max_request_memory": 80,
@@ -217,10 +220,13 @@
 	"webp": {
 		"group": "compute",
 		"uri": "https://filebin.varnish-software.com/tinykvm_programs/webpencoder.tar.xz",
+		"key": "123",
 		"filename": "/tmp/compute_webp",
 		"max_memory": 128,
 		"max_request_memory": 64,
-		"concurrency": 2
+		"concurrency": 2,
+		"ephemeral": false,
+		"hugepage_arena_size": 16
 	},
 	"xml": {
 		"group": "compute",
@@ -232,7 +238,8 @@
 	"zlibng": {
 		"group": "compute",
 		"uri": "https://filebin.varnish-software.com/tinykvm_programs/zlibng.tar.xz",
-		"filename": "/tmp/compute_zlibng"
+		"filename": "/tmp/compute_zlibng",
+		"ephemeral": false
 	},
 	"zstd": {
 		"group": "compute",

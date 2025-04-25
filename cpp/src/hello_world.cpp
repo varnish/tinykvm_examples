@@ -76,7 +76,7 @@ on_socket_prepare(int thread)
 
 int main(int argc, char **argv)
 {
-	Print("Hello Compute %s World!\n", argv[2]);
+	Print("Hello Compute %s World!\n", getenv("KVM_TYPE"));
 
 	set_backend_get(on_get);
 

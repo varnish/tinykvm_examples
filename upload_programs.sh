@@ -45,6 +45,7 @@ upload_program cpp/.build/espeak
 upload_program cpp/.build/hello_world
 upload_program cpp/.build/fetch
 upload_program cpp/.build/minify
+upload_program cpp/.build/payload
 upload_program cpp/.build/to_string
 upload_program cpp/base64/.build/base64pp
 upload_program cpp/thumbnail/.build/thumbnails

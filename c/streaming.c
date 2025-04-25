@@ -27,7 +27,7 @@ on_get(const char *url, const char *arg)
 
 int main(int argc, char **argv)
 {
-    if (strcmp(argv[0], "vmod_kvm"))
+    if (IS_LINUX_MAIN())
     {
         puts("Hello Linux World!");
         return 0;

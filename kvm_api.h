@@ -46,12 +46,16 @@ extern "C" {
 extern void register_func(int, ...);
 
 /**
- * Detecting KVM from main(). Note that we could check CPUID, but we prefer
- * a simple check for / in argv[0].
+ * Detecting KVM from main(). Presence of environment variables,
+ * like KVM_NAME and KVM_TYPE, are used to determine if the
+ * program is running in a sandboxed environment.
 **/
 #define IS_SANDBOXED_MAIN()  (getenv("KVM_NAME") != (void*)0)
 #define IS_LINUX_MAIN()      !IS_SANDBOXED_MAIN()
-#define IS_STORAGE()         (strcmp(getenv("KVM_TYPE"), "storage") == 0)
+#define IS_STORAGE()		 (strcmp(getenv("KVM_TYPE"), "storage") == 0)
+#define IS_REQUEST()		 (strcmp(getenv("KVM_TYPE"), "request") == 0)
+#define IS_DEBUG()			 (strcmp(getenv("KVM_DEBUG"), "1") == 0)
+
 /**
  * During the start of the program, one should register callback functions
  * that will handle different types of requests, like GET, POST etc.
