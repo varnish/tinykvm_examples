@@ -89,6 +89,8 @@ varnish.wait_for_requests()
 
 ## Licensing
 
+The VMOD API is licensed under a permissive BSD license.
+
 TinyKVM and VMOD-TinyKVM are released under a dual licensing model:
 
 - **Open Source License**: GPL‑3.0 (see [LICENSE](LICENSE)).

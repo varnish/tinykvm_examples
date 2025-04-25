@@ -1,3 +1,28 @@
+/**
+ * Copyright (c) 2025 Varnish Software AS
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL AUTHOR OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+**/
 #include "kvm_api.h"
 #include <array>
 #include <cstring>
@@ -14,22 +39,22 @@ struct Backend
         backend_response(status, ct.begin(), ct.size(), cont, cont_len);
     }
     static void response(uint16_t status, std::string_view ct, const void *cont, size_t cont_len,
-		const std::vector<std::string> &headers, float ttl = 0.0f, float grace = 0.0f, float keep = 0.0f)
+        const std::vector<std::string> &headers, float ttl = 0.0f, float grace = 0.0f, float keep = 0.0f)
     {
-		std::array<ResponseHeader, 64> header_array;
-		size_t i = 0;
-		for (const auto& header : headers) {
-			header_array.at(i).field = header.data();
-			header_array.at(i).field_len = header.size();
-			i++;
-		}
-		BackendResponseExtra extra = {};
-		extra.headers = header_array.data();
-		extra.num_headers = i;
-		extra.cached = ttl > 0.0f;
-		extra.ttl = ttl;
-		extra.grace = grace;
-		extra.keep = keep;
+        std::array<ResponseHeader, 64> header_array;
+        size_t i = 0;
+        for (const auto& header : headers) {
+            header_array.at(i).field = header.data();
+            header_array.at(i).field_len = header.size();
+            i++;
+        }
+        BackendResponseExtra extra = {};
+        extra.headers = header_array.data();
+        extra.num_headers = i;
+        extra.cached = ttl > 0.0f;
+        extra.ttl = ttl;
+        extra.grace = grace;
+        extra.keep = keep;
         backend_response_extra(status, ct.begin(), ct.size(), cont, cont_len, &extra);
     }
 
@@ -38,7 +63,7 @@ struct Backend
         backend_response(status, ct.begin(), ct.size(), cont.begin(), cont.size());
     }
     static void response(uint16_t status, std::string_view ct, std::string_view cont,
-		const std::vector<std::string> &headers, float ttl = 0.0f, float grace = 0.0f, float keep = 0.0f)
+        const std::vector<std::string> &headers, float ttl = 0.0f, float grace = 0.0f, float keep = 0.0f)
     {
         response(status, ct, cont.begin(), cont.size(), headers, ttl, grace, keep);
     }
@@ -47,17 +72,18 @@ struct Backend
 struct Storage
 {
     template <size_t Size = 16UL << 20> /* 16MB buffer */
-    static std::string get(std::string_view arg, storage_func func)
+static std::string get(std::string_view arg, storage_func func)
+{
+    std::string buffer;
+    buffer.resize(Size);
+    const long len = storage_call(func, arg.begin(), arg.size(), buffer.data(), buffer.size());
+    if (len >= 0)
     {
-        std::string buffer;
-		buffer.resize(Size);
-        const long len = storage_call(func, arg.begin(), arg.size(), buffer.data(), buffer.size());
-        if (len >= 0) {
-			buffer.resize(len);
-			return buffer;
-		}
-        throw std::runtime_error("Storage access failed");
+        buffer.resize(len);
+        return buffer;
     }
+    throw std::runtime_error("Storage access failed");
+}
 
     template <size_t Size = 16UL << 20> /* 16MB buffer */
     static std::string get(const std::vector<std::string>& arg, storage_func func)
