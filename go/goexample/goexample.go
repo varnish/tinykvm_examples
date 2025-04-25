@@ -53,6 +53,7 @@ func main() {
 
 	varnish.StorageRegister("my_storage", my_storage)
 
-	fmt.Println("Go Compute Example ready (", os.Args[2], ")")
+	// Storage/request can be determined from environment variable KVM_TYPE
+	fmt.Println("Go Compute Example ready (", os.Getenv("KVM_TYPE"), ")")
 	varnish.WaitForRequests()
 }

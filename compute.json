@@ -82,7 +82,6 @@
 		"address_space": 1800,
 		"remapping": ["0xC000000000", 256],
 		"max_memory": 64,
-		"relocate_fixed_mmap": false,
 		"concurrency": 4,
 		"storage": true
 	},

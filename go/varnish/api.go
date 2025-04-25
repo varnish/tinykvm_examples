@@ -32,12 +32,14 @@ import "C"
 import (
 	"errors"
 	"os"
-	"strings"
 	"unsafe"
 )
 
 func IsLinuxMain() bool {
-	return strings.Contains(os.Args[0], "/")
+	// The presence of environment variable KVM_TYPE means we are running
+	// in a KVM sandbox. Simply check if it exists:
+	_, ok := os.LookupEnv("KVM_TYPE")
+	return !ok
 }
 
 type GetHandler func(string, string)
