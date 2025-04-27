@@ -226,6 +226,12 @@ struct backend_request {
 };
 */
 #[allow(dead_code)]
+pub struct RequestHeader {
+	pub value: *const c_char,
+	pub colon_index: u32,
+	pub len: u32,
+}
+#[allow(dead_code)]
 pub struct Request {
 	pub method: *const c_char,
 	pub url: *const c_char,
@@ -237,6 +243,12 @@ pub struct Request {
 	pub content_type_len: u16,
 	pub content: *const u8,
 	pub content_len: usize,
+	pub headers: *const RequestHeader,
+	pub num_headers: u16,
+	pub flags: u16,
+	pub reserved: u32,
+	pub reserved2: u64,
+	pub reserved3: u64,
 }
 
 impl Request {

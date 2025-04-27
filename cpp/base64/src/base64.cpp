@@ -5,7 +5,7 @@
 #include <turbob64.h>
 
 static void
-on_request(const struct backend_request *req)
+on_request(const struct kvm_request *req)
 {
 	//const auto j = nlohmann::json::parse(req->arg, req->arg_len, nullptr, true, true);
 	const uint8_t *in = nullptr;

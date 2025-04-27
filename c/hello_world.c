@@ -1,6 +1,7 @@
 #include "../kvm_api.h"
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 int main(int argc, char **argv)
 {
@@ -11,7 +12,7 @@ int main(int argc, char **argv)
 	}
 
 	while (true) {
-		struct backend_request req;
+		struct kvm_request req;
 		wait_for_requests_paused(&req);
 
 		http_appendf(RESP, "X-Hello: %s", "World");

@@ -53,7 +53,7 @@ static PyObject* pyv_backend_response(PyObject* self, PyObject* args) {
 
 // Add a function that waits for requests as a return value
 static PyObject* pyv_wait_for_requests(PyObject* self, PyObject* args) {
-	// The backend_request struct contains the following fields:
+	// The kvm_request struct contains the following fields:
 	// 1. method - The HTTP method (GET, POST, etc.)
 	// 2. url - The URL of the request
 	// 3. arg - Extra arguments to the program (eg. JSON config)
@@ -65,7 +65,7 @@ static PyObject* pyv_wait_for_requests(PyObject* self, PyObject* args) {
 	// 9. arg_len - The length of the arguments
 	// 10. content_type_len - The length of the content type
 	// We will take content as a binary type (y*) and *NOT* a string (s)
-	struct backend_request req;
+	struct kvm_request req;
 	wait_for_requests_paused(&req);
 	PyObject* result = Py_BuildValue(
 		"{s:s, s:s, s:s, s:s, s:y#}",

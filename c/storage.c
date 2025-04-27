@@ -72,7 +72,7 @@ on_resume_update(size_t len)
 	storage_return(cont, len);
 }
 
-static void test(void *arg)
+static void test(void *arg, size_t len)
 {
 	/* The return address is on the usercode page (0x5000). */
 	void *ra = __builtin_return_address(0);

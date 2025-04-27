@@ -84,7 +84,12 @@ extern void register_func(int, ...);
 static inline void set_backend_get(void(*f)(const char *url, const char *arg)) { register_func(1, f); }
 static inline void set_backend_post(void(*f)(const char *url, const char *arg, const char *ctype, const uint8_t*, size_t)) { register_func(2, f); }
 
-struct backend_request {
+struct kvm_request_header {
+	const char *field;
+	uint32_t    field_colon; /* Index of the colon in the field. */
+	uint32_t    field_len;   /* Length of the entire key: value pair. */
+};
+struct kvm_request {
 	const char *method;
 	const char *url;
 	const char *arg;
@@ -95,8 +100,16 @@ struct backend_request {
 	uint16_t    content_type_len;
 	const uint8_t *content; /* Can be NULL. */
 	size_t         content_len;
+	/* HTTP headers */
+	struct kvm_request_header *headers;
+	uint16_t num_headers;
+	uint16_t info_flags; /* 0x1 = request is a warmup request. */
+	uint32_t reserved0;    /* Reserved for future use. */
+	uint64_t reserved1[2]; /* Reserved for future use. */
 };
-static inline void set_backend_request(void(*f)(const struct backend_request*)) { register_func(3, f); }
+#define IS_WARMUP_REQUEST(req) ((req)->info_flags & 0x1)
+
+static inline void set_backend_request(void(*f)(const struct kvm_request*)) { register_func(3, f); }
 
 /* Streaming POST will receive each data segment as they arrive. A final POST
    call happens at the end. This call needs some further improvements, because
@@ -124,8 +137,8 @@ extern void wait_for_requests();
 /* Wait for requests by pausing the machine and recording the current
    state of machine registers. This allowed resumption in event loops
    and other types of event-driven programming. Request URL and other
-   data can be retrieved from the struct backend_request argument. */
-extern void wait_for_requests_paused(struct backend_request* req);
+   data can be retrieved from the struct kvm_request argument. */
+extern void wait_for_requests_paused(struct kvm_request* req);
 
 /**
  * When a request arrives the handler function is the only function that will

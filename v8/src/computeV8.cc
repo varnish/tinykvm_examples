@@ -195,7 +195,7 @@ int main(int argc, char* argv[])
 		{
 			while (true) {
 				// Wait for requests
-				struct backend_request req;
+				struct kvm_request req;
 				wait_for_requests_paused(&req);
 
 				// Invoke the script and produce a response
