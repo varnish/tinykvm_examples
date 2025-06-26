@@ -757,22 +757,29 @@ asm(".global register_func\n"
 asm(".global wait_for_requests\n"
 	".type wait_for_requests, @function\n"
 	"wait_for_requests:\n"
+	".cfi_startproc\n"
 	"	mov $0x10001, %eax\n"
-	"	out %eax, $0\n");
+	"	out %eax, $0\n"
+	"	ret\n"
+	".cfi_endproc\n");
 
 asm(".global wait_for_requests_paused\n"
 	".type wait_for_requests_paused, @function\n"
 	"wait_for_requests_paused:\n"
+	".cfi_startproc\n"
 	"	mov $0x10002, %eax\n"
 	"	out %eax, $0\n"
-	"	ret\n");
+	"	ret\n"
+	".cfi_endproc\n");
 
 asm(".global wait_for_socket_events_paused\n"
 	".type wait_for_socket_events_paused, @function\n"
 	"wait_for_socket_events_paused:\n"
+	".cfi_startproc\n"
 	"	mov $0x10002, %eax\n"
 	"	out %eax, $0\n"
-	"	ret\n");
+	"	ret\n"
+	".cfi_endproc\n");
 
 asm(".global sys_set_cacheable\n"
 	".type sys_set_cacheable, @function\n"
