@@ -18,8 +18,9 @@ serve(async () => {
 			//img.resize(200, 200);
 			//img.blur(20, 6);
 			img.format = MagickFormat.Avif;
-			img.quality = 50; // set quality from 0 to 100
-			img.speed = 10;   // set speed from 0 to 10
+			img.quality = 65; // 0 to 100
+			//img.speed = 10;   // 0 to 10
+			img.setAttribute('heic:speed', '10');
 
 			img.write(
 				(data: Uint8Array) => resolve(data));

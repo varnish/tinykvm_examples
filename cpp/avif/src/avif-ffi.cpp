@@ -1,6 +1,8 @@
 #include <avif/avif.h>
 #include <nlohmann/json.hpp>
 #include <turbojpeg.h>
+#define USE_LIBJPEG 0
+#define ENCODE_VIA_RGB 1
 
 #if USE_LIBJPEG
 #include <jpeglib.h>
@@ -30,7 +32,7 @@ static avifEncoder *encoder = nullptr;
 static avifRWData avifOutput;
 
 /* This function decodes a JPEG and encodes an AVIF, with medium quality. */
-void produce_image(const uint8_t *source_image, const size_t source_image_len,
+static void produce_image(const uint8_t *source_image, const size_t source_image_len,
 	uint8_t *&out_data, size_t &out_size,
 	int quality = 75, int speed = 6)
 {
@@ -107,6 +109,20 @@ void produce_image(const uint8_t *source_image, const size_t source_image_len,
 	if (image) avifImageDestroy(image);
 	image = avifImageCreate(W, H, 8, AVIF_PIXEL_FORMAT_YUV420);
 
+#if ENCODE_VIA_RGB
+	avifRGBImage rgb;
+	memset(&rgb, 0, sizeof(rgb));
+
+	avifRGBImageSetDefaults(&rgb, image);
+	rgb.format = AVIF_RGB_FORMAT_RGB;
+	rgb.chromaUpsampling = AVIF_CHROMA_UPSAMPLING_AUTOMATIC;
+	avifRGBImageAllocatePixels(&rgb);
+
+	tjDecompress2(tj, source_image, source_image_len,
+		rgb.pixels, W, rgb.rowBytes, H, TJPF_RGB, 0);
+
+	avifImageRGBToYUV(image, &rgb);
+#else
 	const avifResult allocateResult = avifImageAllocatePlanes(image, AVIF_PLANES_ALL);
 	if (allocateResult != AVIF_RESULT_OK)
 		bail(source_image, source_image_len, avifResultToString(allocateResult));
@@ -116,9 +132,9 @@ void produce_image(const uint8_t *source_image, const size_t source_image_len,
 
 	// ???
 	memset(image->alphaPlane, 255, image->alphaRowBytes * image->height);
+#endif // ENCODE_VIA_RGB
 
-
-#endif
+#endif // USE_LIBJPEG
 
 	/* Encode AVIF */
 	if (encoder) avifEncoderDestroy(encoder);

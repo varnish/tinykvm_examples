@@ -184,7 +184,7 @@ print('Hello Python Compute World')
 	}
 
 	// Open the main Python file
-	FILE *fp = fopen(argv[3], "r");
+	FILE *fp = fopen(argv[1], "r");
 	if (fp == NULL) {
 		fprintf(stderr, "Could not open Python file: %s\n", argv[3]);
 		Py_Finalize();

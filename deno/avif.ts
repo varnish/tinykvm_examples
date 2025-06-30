@@ -10,27 +10,26 @@ const libavif = Deno.dlopen(
 	} as const,
 );
 import { serve } from "./server.ts";
-const jpegData = Deno.readFileSync(
-	"/home/gonzo/github/kvm_demo/deno/deno_city.jpeg",
+const jpeg = await fetch("https://deno.land/images/artwork/deno_city.jpeg");
+const jpegData = new Uint8Array(
+	await jpeg.arrayBuffer(),
 );
 
 serve(async () => {
 	const ptrContainer = new BigUint64Array(1);
 	const avifDataLen = libavif.symbols.transcode_jpeg_to_avif(
-		jpegData.buffer, jpegData.byteLength,
-		50,  // quality
-		10,  // speed
-		Deno.UnsafePointer.of(ptrContainer), // output pointer
+		jpegData.buffer, BigInt(jpegData.byteLength),
+		65,  // quality
+		6,  // speed
+		Deno.UnsafePointer.of(ptrContainer), // uint8_t** pointer
 	);
 	if (avifDataLen === 0) {
 		throw new Error("Failed to transcode JPEG to AVIF");
 	}
 
 	const avifDataPtr = Deno.UnsafePointer.create(ptrContainer[0]);
-	const avifPtrView = new Deno.UnsafePointerView(avifDataPtr);
-
-	const avifData = new Uint8Array(avifDataLen);
-	avifPtrView.copyInto(avifData);
+	const avifPtrView = Deno.UnsafePointerView.getArrayBuffer(avifDataPtr!, avifDataLen);
+	const avifData = new Uint8Array(avifPtrView);
 
 	return new Response(avifData, {
 		headers: {
