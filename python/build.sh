@@ -19,7 +19,7 @@ popd
 #set -x
 gcc -O2 -o python_tinykvm \
     -I. ${PINCLUDES} \
-	-rdynamic \
+    -rdynamic \
     -L${PLIBS} \
     python.c  \
     -l$P \
@@ -38,19 +38,24 @@ Copy this into your VCL configurations vcl_init:
     tinykvm.configure("python",
         """{
             "filename": "$PWD/python_tinykvm",
-			"concurrency": 4,
-			"main_arguments": [
-				"$PWD/program.py"
-			],
-            "allowed_paths": [
-				"\$$PWD/portable-python-cmake-buildsystem/.build/lib/python3.13",
-				"$PWD/program.py",
-				"/"
+            "concurrency": 4,
+            "main_arguments": [
+                "$PWD/program.py"
             ],
-			"environment": [
-				"PYTHONHOME=$PWD",
-				"PYTHONPATH=$PWD/portable-python-cmake-buildsystem/.build/lib/python3.13"
-			]
+            "current_working_directory": "$PWD",
+            "allowed_paths": [
+                {
+                    "real": "/lib/x86_64-linux-gnu",
+                    "prefix": true
+                }, {
+                    "real": "$PWD",
+                    "prefix": true
+                }
+            ],
+            "environment": [
+                "PYTHONHOME=$PWD",
+                "PYTHONPATH=$PWD/portable-python-cmake-buildsystem/.build/lib/python3.13"
+            ]
         }""");
 *** End VCL Configuration ***
 EOF

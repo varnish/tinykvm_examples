@@ -13,21 +13,27 @@ Once you have the static Python executable, you will need a customized compute.j
 ```json
 {
 	"filename": "/home/gonzo/github/kvm_demo/python/python_tinykvm",
+	"concurrency": 4,
 	"main_arguments": [
 		"/home/gonzo/github/kvm_demo/python/program.py"
 	],
+	"current_working_directory": "/home/gonzo/github/kvm_demo/python",
 	"allowed_paths": [
-		"$/home/gonzo/github/python-cmake-buildsystem/.build/lib/python3.13",
-		"/home/gonzo/github/kvm_demo/python/program.py",
-		"/"
+		{
+			"real": "/lib/x86_64-linux-gnu",
+			"prefix": true
+		}, {
+			"real": "/home/gonzo/github/kvm_demo/python",
+			"prefix": true
+		}
 	],
 	"environment": [
 		"PYTHONHOME=/home/gonzo/github/kvm_demo/python",
-		"PYTHONPATH=/home/gonzo/github/python-cmake-buildsystem/.build/lib/python3.13"
+		"PYTHONPATH=/home/gonzo/github/kvm_demo/python/portable-python-cmake-buildsystem/.build/lib/python3.13"
 	]
 }
 ```
 
-We're passing the program as part of main arguments, and allowing access to Python modules in `allowed_paths`. We also have to tell Python about where to find the modules, which path can be set in the `PYTHONPATH` environment variable.
+The [build.sh](build.sh) will also generate the JSON for you, that matches your machine.
 
-Why Python needs access to `/` is still a mystery, but probably not something that is dangerous to do. It is read-only access, and is not used as prefix for other accesses.
+We're passing the program as part of main arguments, and allowing access to Python modules in `allowed_paths`. We also have to tell Python about where to find the modules, which path can be set in the `PYTHONPATH` environment variable.
