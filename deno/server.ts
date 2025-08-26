@@ -173,7 +173,7 @@ const kvm_request = struct(
 
 const get_method = latin1String(bufferAccessor("method", kvm_request));
 const get_url = latin1String(bufferAccessor("url", kvm_request));
-const _get_arg = latin1String(bufferAccessor("arg", kvm_request));
+const get_arg = latin1String(bufferAccessor("arg", kvm_request));
 const _get_content_type = latin1String(
 	bufferAccessor("content_type", kvm_request),
 );
@@ -214,8 +214,11 @@ const get_request = (dv: DataView): Request => {
 	const url = new URL(get_url(dv), "http://localhost:8080");
 	const method = get_method(dv);
 	const headers = get_headers(dv);
+	const argument = get_arg(dv);
 	const body = get_content(dv);
-	return new Request(url, { method, headers, body });
+	let req = new Request(url, { method, headers, body });
+	req.argument = argument;
+	return req;
 };
 
 const _ResponseHeader = struct(
@@ -252,6 +255,12 @@ const libkvm_api = Deno.dlopen(
 		},
 		// extern void wait_for_requests_paused(struct kvm_request* req)
 		wait_for_requests_paused: { parameters: ["buffer"], result: "void" },
+		// extern char *vd_find_header(const char *name)
+		vd_find_header: { parameters: ["buffer"], result: "pointer" },
+		// extern void vd_set_req_header(const char *full)
+		vd_set_req_header: { parameters: ["buffer", "usize"], result: "void" },
+		// extern void vd_set_resp_header(const char *full)
+		vd_set_resp_header: { parameters: ["buffer", "usize"], result: "void" },
 	} as const,
 );
 
@@ -280,7 +289,7 @@ export const serve = async (handler: ServeHandler<VarnishAddr>) => {
 		const request = get_request(reqView);
 		const response = await handler(request, info);
 		const content_type = new TextEncoder().encode(
-			response.headers.get("Content-Type") ?? "",
+			response.headers.get("Content-Type") ?? "text/plain",
 		);
 		const body = await response.bytes();
 		libkvm_api.symbols.sys_backend_response(
@@ -292,4 +301,34 @@ export const serve = async (handler: ServeHandler<VarnishAddr>) => {
 			null,
 		);
 	}
+};
+
+export const http_getfield = (name: string): string | null => {
+	const nameArray = new TextEncoder().encode(name);
+	const headerValue = Deno.UnsafePointerView.getCString(
+		libkvm_api.symbols.vd_find_header(nameArray),
+	);
+	if (headerValue === null) {
+		return null;
+	}
+	return headerValue;
+};
+
+export const http_get = (name: string): [string, string] | null => {
+	const headerValue = http_getfield(name);
+	if (headerValue === null) {
+		return null;
+	}
+	const [key, value] = headerValue.split(": ");
+	return [key, value];
+};
+
+export const http_set_req = (name: string, value: string): void => {
+	const headerValue = `${name}: ${value}`;
+	libkvm_api.symbols.vd_set_req_header(new TextEncoder().encode(headerValue), BigInt(headerValue.length));
+};
+
+export const http_set_resp = (name: string, value: string): void => {
+	const headerValue = `${name}: ${value}`;
+	libkvm_api.symbols.vd_set_resp_header(new TextEncoder().encode(headerValue), BigInt(headerValue.length));
 };

@@ -51,3 +51,14 @@ void dummy_response_str()
 {
 	backend_response_str(200, "text/plain", "Hello, world!");
 }
+
+char* vd_find_header(const char* name) {
+	return (char*)http_alloc_find(REQ, name);
+}
+
+void vd_set_req_header(const char* full, size_t len) {
+	sys_http_set(REQ, full, len);
+}
+void vd_set_resp_header(const char* full, size_t len) {
+	sys_http_set(RESP, full, len);
+}
