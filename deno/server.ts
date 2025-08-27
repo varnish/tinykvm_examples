@@ -308,15 +308,12 @@ export const http_getfield = (name: string): string | null => {
 	const headerValue = Deno.UnsafePointerView.getCString(
 		libkvm_api.symbols.vd_find_header(nameArray),
 	);
-	if (headerValue === null) {
-		return null;
-	}
 	return headerValue;
 };
 
 export const http_get = (name: string): [string, string] | null => {
 	const headerValue = http_getfield(name);
-	if (headerValue === null) {
+	if (headerValue === "") {
 		return null;
 	}
 	const [key, value] = headerValue.split(": ");
