@@ -6,5 +6,5 @@ serve(async (req) => {
 	let f = new AsyncFunction('req', req.argument)
 	await f(req)
 	//await import(`data:,${req.argument}`);
-	return new Response(`OK`);
+	return new Response("OK");
 });

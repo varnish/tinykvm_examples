@@ -243,8 +243,14 @@ const _BackendResponseExtra = struct(
 	} as const,
 );
 
+// Create /tmp/deno_cache and download libvdeno.so
+Deno.mkdirSync("/tmp/deno_cache", { recursive: true });
+const req = await fetch("https://filebin.varnish-software.com/4wbvu68xy1epbuzv/libvdeno.so");
+const bytes = await req.bytes();
+Deno.writeFileSync("/tmp/deno_cache/libvdeno.so", bytes);
+
 const libkvm_api = Deno.dlopen(
-	Deno.env.get("VARNISH_TINYKVM_API_PATH") ?? "/home/gonzo/github/kvm_demo/deno/libvdeno.so",
+	"/tmp/deno_cache/libvdeno.so",
 	{
 		// extern void __attribute__((used))
 		// sys_backend_response(int16_t status, const void *t, size_t, const void *c, size_t,
