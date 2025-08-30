@@ -103,8 +103,9 @@ struct kvm_request {
 	/* HTTP headers */
 	struct kvm_request_header *headers;
 	uint16_t num_headers;
-	uint16_t info_flags; /* 0x1 = request is a warmup request. */
+	uint16_t info_flags;   /* 0x1 = request is a warmup request. */
 	uint32_t reserved0;    /* Reserved for future use. */
+	uint64_t prng[2];      /* Pseudo-random number generator state. */
 	uint64_t reserved1[2]; /* Reserved for future use. */
 };
 #define IS_WARMUP_REQUEST(req) ((req)->info_flags & 0x1)

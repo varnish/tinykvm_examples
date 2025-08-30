@@ -18,7 +18,7 @@ on_get(const char *url, const char *arg)
 int main(int argc, char **argv)
 {
 	/* Allocate an integer from shared memory area */
-	counter = SHM_ALLOC_TYPE(*counter);
+	counter = SHM_ALLOC(*counter);
 
 	set_backend_get(on_get);
 	wait_for_requests();

@@ -1,0 +1,65 @@
+{
+	"deno": {
+		"uri": "https://filebin.varnish-software.com/4wbvu68xy1epbuzv/deno",
+		"filename": "/tmp/deno_cache/deno",
+		"concurrency": 2,
+		"address_space": 2000,
+		"max_memory": 512,
+		"max_request_memory": 256,
+		"req_mem_limit_after_reset": 128,
+		"executable_remapping": {
+			"caged_heap": ["0x1000000000", 64]
+		},
+		"remapping": {
+			"dont_know": ["0xC00000000", 64]
+		},
+		"main_arguments": [
+			"run", "--allow-all", "simple.ts"
+		],
+		"environment": [
+			"DENO_V8_FLAGS=--predictable,--stress-maglev,--prepare-always-turbofan,--always-turbofan,--always-sparkplug,--optimize-on-next-call-optimizes-to-maglev,--max-old-space-size=64,--max-semi-space-size=64",
+			"DENO_DIR=/tmp/deno_cache/.cache",
+			"DENO_NO_UPDATE_CHECK=1"
+		],
+		"download": [
+			{
+				"uri": "https://filebin.varnish-software.com/4wbvu68xy1epbuzv/libvdeno.so",
+				"filepath": "/tmp/deno_cache/libvdeno.so"
+			}, {
+				"uri": "https://filebin.varnish-software.com/4wbvu68xy1epbuzv/server.ts",
+				"filepath": "/tmp/deno_cache/server.ts"
+			}, {
+				"uri": "https://filebin.varnish-software.com/4wbvu68xy1epbuzv/simple.ts",
+				"filepath": "/tmp/deno_cache/simple.ts"
+			}
+		],
+		"current_working_directory": "/tmp/deno_cache",
+		"allowed_paths": [
+			"/dev/urandom",
+			"/etc/resolv.conf",
+			{
+				"real": "/lib/x86_64-linux-gnu",
+				"prefix": true
+			},
+			{
+				"real": "/tmp/deno_cache",
+				"prefix": true
+			},
+			{
+				"real": "/tmp/deno_cache/.cache",
+				"writable": true,
+				"prefix": true
+			},
+			{
+				"real": "/tmp/deno-compile-",
+				"writable": true,
+				"prefix": true
+			}
+		],
+		"hugepage_arena_size": 0,
+		"request_hugepage_arena_size": 0,
+		"warmup": {
+			"num_requests": 50
+		}
+	}
+}

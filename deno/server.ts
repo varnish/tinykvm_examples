@@ -166,6 +166,8 @@ const kvm_request = struct(
 		num_headers: "u16",
 		info_flags: "u16", /* 0x1 = request is a warmup request. */
 		reserved0: "u32", /* Reserved for future use. */
+		prng1: "u64", // uint64_t prng[2]; /* PRNG state */
+		prng2: "u64",
 		reserved1: "u64", // uint64_t reserved1[2]; /* Reserved for future use. */
 		reserved2: "u64",
 	} as const,
@@ -210,6 +212,16 @@ const get_headers = (dv: DataView): Array<[string, string]> => {
 	}
 	return headers;
 };
+const get_prng_state = (dv: DataView): [number, number, number, number] => {
+	const p1 = kvm_request.get_raw_prng1(dv);
+	const p2 = kvm_request.get_raw_prng2(dv);
+	// Split 64-bit p1, p2 into 32-bit a, b, c, d
+	const a = Number(BigInt.asUintN(32, p1));
+	const b = Number(BigInt(p1) >> BigInt(32));
+	const c = Number(BigInt.asUintN(32, p2));
+	const d = Number(BigInt(p2) >> BigInt(32));
+	return [a, b, c, d];
+};
 const get_request = (dv: DataView): Request => {
 	const url = new URL(get_url(dv), "http://localhost:8080");
 	const method = get_method(dv);
@@ -242,12 +254,6 @@ const _BackendResponseExtra = struct(
 		reserved3: "u64",
 	} as const,
 );
-
-// Create /tmp/deno_cache and download libvdeno.so
-Deno.mkdirSync("/tmp/deno_cache", { recursive: true });
-const req = await fetch("https://filebin.varnish-software.com/4wbvu68xy1epbuzv/libvdeno.so");
-const bytes = await req.bytes();
-Deno.writeFileSync("/tmp/deno_cache/libvdeno.so", bytes);
 
 const libkvm_api = Deno.dlopen(
 	"/tmp/deno_cache/libvdeno.so",
@@ -284,6 +290,18 @@ export type ServeHandler<Addr> = (
 	info: ServeHandlerInfo<Addr>,
 ) => Response | Promise<Response>;
 
+function xoshiro128ss(a, b, c, d) {
+	let t = b << 9, r = b * 5;
+	r = (r << 7 | r >>> 25) * 9;
+	c ^= a;
+	d ^= b;
+	b ^= c;
+	a ^= d;
+	c ^= t;
+	d = d << 11 | d >>> 21;
+	return (r >>> 0) / 4294967296;
+}
+
 export const serve = async (handler: ServeHandler<VarnishAddr>) => {
 	const remoteAddr: VarnishAddr = { transport: "varnish" };
 	while (true) {
@@ -292,6 +310,11 @@ export const serve = async (handler: ServeHandler<VarnishAddr>) => {
 		const reqBuf = new Uint8Array(kvm_request.byteLength);
 		const reqView = new DataView(reqBuf.buffer);
 		libkvm_api.symbols.wait_for_requests_paused(reqBuf);
+		// Create custom Math.random from request PRNG state
+		Math.random = () => {
+			const [a, b, c, d] = get_prng_state(reqView);
+			return Number(xoshiro128ss(a, b, c, d));
+		};
 		const request = get_request(reqView);
 		const response = await handler(request, info);
 		const content_type = new TextEncoder().encode(

@@ -144,7 +144,7 @@ int main(int argc, char* argv[])
 	// Initialize V8.
 	v8::V8::InitializeICUDefaultLocation(argv[0]);
 	v8::V8::InitializeExternalStartupData(argv[0]);
-	v8::V8::SetFlagsFromString("--turbofan --single-threaded --single-threaded-gc");
+	v8::V8::SetFlagsFromString("--predictable --single-threaded --single-threaded-gc");
 	std::unique_ptr<v8::Platform> platform = v8::platform::NewDefaultPlatform();
 	v8::V8::InitializePlatform(platform.get());
 	v8::V8::Initialize();
@@ -172,7 +172,7 @@ int main(int argc, char* argv[])
 		v8::Context::Scope context_scope(context);
 
 		// The JavaScript code:
-		const char *code = argv[3];
+		const char *code = argv[1];
 		printf("Code: %s\n", code);
 		fflush(stdout);
 
