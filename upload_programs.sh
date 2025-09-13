@@ -1,5 +1,5 @@
 #!/bin/bash
-BIN=tinykvm_programs
+BIN=4wbvu68xy1epbuzv
 
 upload() {
 	base=`basename $1`
@@ -22,9 +22,9 @@ pack_with_storage() {
 }
 
 #pack_with_storage cpp/minimal/minimal cpp/minimal/storage
-#exit 0
 
 upload compute.json
+
 upload_program c/zlib/.build/zlibng
 upload_program cpp/.build/deflate
 upload_program v8/.build/v8-cmake/computeV8

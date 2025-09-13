@@ -56,8 +56,6 @@
 				"prefix": true
 			}
 		],
-		"hugepage_arena_size": 0,
-		"request_hugepage_arena_size": 0,
 		"warmup": {
 			"num_requests": 50
 		}
